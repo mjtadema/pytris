@@ -30,6 +30,9 @@ grid = ''
 gridsize = ''
 y_off, x_off = (1,1)
 report = ''
+score = 0
+speed = 1.2
+level = 1
 
 def start(init_stdscr=None, **kwargs):
     """
@@ -57,11 +60,17 @@ def start(init_stdscr=None, **kwargs):
         refresh = refresh_debug
         report = print
 
+    global score
+    report_score()
+
+    global speed
+    global level
+
     while not grid.game_over:
         grid.spawn()
         t0 = time.time()
         while True:
-            if time.time() - t0 > 0.5:
+            if time.time() - t0 > speed:
                 t0 = time.time()
                 grid.block.move('down')
             try:
@@ -73,7 +82,11 @@ def start(init_stdscr=None, **kwargs):
             refresh()
 
         grid.put()
-        grid.full_row()
+        score += grid.full_row()
+        if not score == 0 and score%20 == 0:
+            speed *= 0.8
+            level += 1
+        report_score()
 
     refresh()
     stdscr.nodelay(False)
@@ -122,8 +135,13 @@ def refresh_block():
 def refresh_debug():
     print(grid)
 
+def report_score():
+    stdscr.addstr(1, 12+x_off, "SCORE: "+str(score))
+    stdscr.addstr(2, 12+x_off, "LEVEL: "+str(level))
+    stdscr.refresh()
+
 def report_curses(*message):
-    stdscr.addstr(2, 12+x_off, " ".join(message))
+    stdscr.addstr(4, 12+x_off, " ".join(message))
     stdscr.refresh()
 
 def border():
