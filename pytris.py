@@ -22,7 +22,7 @@
 #SOFTWARE.
 
 
-gridsize = (14, 10)
+gridsize = (20, 10)
 
 def main(stdscr):
     from game import start

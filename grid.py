@@ -29,6 +29,8 @@ import time
 from functools import partial
 import curses
 
+buff = 4
+
 class Grid():
 
     def __init__(self, gridsize):
@@ -49,6 +51,7 @@ class Grid():
         """
         # Initialize game
         self.grid_y, self.grid_x    = gridsize
+        grid_buffer                 = self.grid_y+buff, self.grid_x
         self.insert_point           = (3, self.grid_x//2)
         self.grid                   = np.zeros((gridsize))
         self.game_over              = False
@@ -118,11 +121,11 @@ class Grid():
         return False
 
     def full_row(self):
-        row_full = False
+        row_full = 0
         # Handle full row
         for y, row in enumerate(self.grid):
             if row.all() != 0:
-                row_full = True
+                row_full += 1
                 # Delete the full row, insert a blank row up top
                 self.grid = np.delete(self.grid, y, axis=0)
                 self.grid = np.insert(self.grid, 0, np.zeros((1,self.grid_x)), axis=0)

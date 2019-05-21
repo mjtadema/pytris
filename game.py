@@ -21,7 +21,7 @@
 #SOFTWARE.
 
 
-from grid import Grid
+from grid import Grid, buff
 import curses
 import time
 
@@ -82,10 +82,12 @@ def start(init_stdscr=None, **kwargs):
             refresh()
 
         grid.put()
-        score += grid.full_row()
-        if not score == 0 and score%20 == 0:
-            speed *= 0.8
-            level += 1
+        score_inc = grid.full_row()
+        score += score_inc
+        if score_inc:
+            if score%20 == 0:
+                speed *= 0.8
+                level += 1
         report_score()
 
     refresh()
@@ -130,12 +132,16 @@ def refresh_curses():
 def refresh_block():
     for y, x in grid.block.position():
         if y > 3:
-            stdscr.addch(y+y_off-4, x+x_off, grid.block.mark)
+            Y = y+y_off-buff
+            X = x+x_off
+            stdscr.addch(Y, X, grid.block.mark)
 
 def refresh_debug():
     print(grid)
 
 def report_score():
+    global score
+    global level
     stdscr.addstr(1, 12+x_off, "SCORE: "+str(score))
     stdscr.addstr(2, 12+x_off, "LEVEL: "+str(level))
     stdscr.refresh()
@@ -150,6 +156,7 @@ def border():
     side = "|          |"
     stdscr.addstr(0, 0, top)
     grid_y, grid_x = gridsize
-    for y in range(1, 11):
-        stdscr.addstr(y, 0, side)
-    stdscr.addstr(11, 0, bottom)
+    for y in range(grid_y-buff):
+        Y = y+1
+        stdscr.addstr(Y, 0, side)
+    stdscr.addstr(grid_y-buff+1, 0, bottom)

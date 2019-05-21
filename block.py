@@ -48,7 +48,7 @@ blocktypes = {
             'coords': [ (0,0), (1,0), (1,1), (0,-1) ], 
             'mark'  : '7' }
         }
-allowed_blocks = list(blocktypes.keys())
+available_blocks = allowed_blocks = list(blocktypes.keys())
 #allowed_blocks = ['test']
 movements = {
         'down' : (1,0),
@@ -65,6 +65,14 @@ allowed_rotations = list(rotations.keys())
 def pick(keys):
     picked_key = keys[r.randint(0, len(keys)-1)]
     return picked_key
+
+def pick_block():
+    global available_blocks
+    if not available_blocks:
+        available_blocks = list(blocktypes.keys())
+    ri = r.randint(0, len(available_blocks)-1)
+    picked = available_blocks.pop(ri)
+    return picked
 
 class Block():
     def __init__(self, **kwargs):
@@ -86,7 +94,7 @@ class Block():
         """
         # Initialize block definition
         if kwargs['block_type'] == 'random':
-            block_type  = pick(allowed_blocks)
+            block_type  = pick_block()
         block_def       = blocktypes[block_type]
         self.definition = block_def['coords']
         self.mark       = block_def['mark']
@@ -102,7 +110,7 @@ class Block():
         self.fw_rv      = (ut.switch_tuple, ut.invert_tuple)
 
     def __str__(self):
-        grid = np.zeros((14, 10))
+        grid = np.zeros((14, 10)) # This is now broken
         for y, x in self.position():
             grid[y][x] = self.mark
         return str(grid)
@@ -130,13 +138,6 @@ class Block():
         Rotates the block forwards or reverse
         input: bool
         """
-        if rot_key == 'random':
-            rot_key = pick(allowed_rotations)
-        rot_action = rotations[rot_key]
-        if rot_key == 'fw':
-            rot_func = self.fw_rv[0]
-        else:
-            rot_func = self.fw_rv[1]
         self.rotation = [ tuple([x, -y]) for y, x in self.rotation ] 
         self.fw_rv = ut.switch_tuple(self.fw_rv)
         self.prev_move = rot_key
