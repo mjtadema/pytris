@@ -137,9 +137,10 @@ class Block():
             rot_func = self.fw_rv[0]
         else:
             rot_func = self.fw_rv[1]
-        self.rotation = rot_func(self.rotation)
+        self.rotation = [ tuple([x, -y]) for y, x in self.rotation ] 
         self.fw_rv = ut.switch_tuple(self.fw_rv)
         self.prev_move = rot_key
+
 
     @update
     def move(self, move):
