@@ -33,6 +33,9 @@ report = ''
 score = 0
 speed = 1.2
 level = 1
+score_file = "highscore"
+name = 'nobody'
+highscore = 0
 
 def start(init_stdscr=None, **kwargs):
     """
@@ -62,6 +65,7 @@ def start(init_stdscr=None, **kwargs):
 
     global score
     report_score()
+    read_highscore()
 
     global speed
     global level
@@ -93,6 +97,7 @@ def start(init_stdscr=None, **kwargs):
     refresh()
     stdscr.nodelay(False)
     report("Game Over!")
+    write_highscore()
     stdscr.getch()
 
     if stdscr:
@@ -160,3 +165,26 @@ def border():
         Y = y+1
         stdscr.addstr(Y, 0, side)
     stdscr.addstr(grid_y-buff+1, 0, bottom)
+
+def read_highscore():
+    global name
+    global highscore
+    try :
+        with open(score_file, 'r') as f: 
+            name = f.readline().strip()
+            highscore = f.readline().strip()
+    except:
+        pass
+    stdscr.addstr(4, 12+x_off, "HIGHSCORE:")
+    stdscr.addstr(5, 12+x_off, str(name))
+    stdscr.addstr(6, 12+x_off, str(highscore))
+
+def write_highscore():
+    if score > highscore:
+        import getpass
+        name = getpass.getuser()
+        with open(score_file, 'w') as f:
+            f.write(f"{name}\n")
+            f.write(f"{score}\n")
+
+
