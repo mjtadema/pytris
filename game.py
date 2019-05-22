@@ -31,7 +31,8 @@ gridsize = ''
 y_off, x_off = (1,1)
 report = ''
 score = 0
-speed = 1.2
+speed = 1.0
+factor = 0.6
 level = 1
 score_file = "highscore"
 name = 'nobody'
@@ -92,8 +93,9 @@ def start(init_stdscr=None, **kwargs):
 
         grid.put()
         score += grid.full_row()
-        if score // level >= 20:
+        if score // level >= 4:
             level += 1
+            speed *= factor
         report_score()
 
     refresh()
