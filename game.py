@@ -93,7 +93,7 @@ def start(init_stdscr=None, **kwargs):
 
         grid.put()
         score += grid.full_row()
-        if score // level >= 4:
+        if score // level >= 20:
             level += 1
             speed *= factor
         report_score()
