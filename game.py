@@ -91,12 +91,9 @@ def start(init_stdscr=None, **kwargs):
             refresh()
 
         grid.put()
-        score_inc = grid.full_row()
-        score += score_inc
-        if score_inc:
-            if score%20 == 0:
-                speed *= 0.8
-                level += 1
+        score += grid.full_row()
+        if score // level >= 20:
+            level += 1
         report_score()
 
     refresh()
