@@ -36,6 +36,7 @@ level = 1
 score_file = "highscore"
 name = 'nobody'
 highscore = 0
+block = "curses."
 
 def start(init_stdscr=None, **kwargs):
     """
@@ -60,7 +61,7 @@ def start(init_stdscr=None, **kwargs):
         stdscr.nodelay(True)
         curses.use_default_colors()
         for i in range(0, curses.COLORS):
-            curses.init_pair(i, i, -1);
+            curses.init_pair(i, -1, i);
         
     else:
         refresh = refresh_debug
@@ -135,7 +136,7 @@ def refresh_curses():
                 ch = ' '
                 stdscr.addstr(y+y_off, x+x_off, ch)
             else:
-                stdscr.addstr(y+y_off, x+x_off, str(ch), curses.color_pair(ch))
+                stdscr.addstr(y+y_off, x+x_off, " ", curses.color_pair(ch))
                 
     refresh_block()
     stdscr.refresh()
@@ -146,7 +147,7 @@ def refresh_block():
             Y = y+y_off-buff
             X = x+x_off
             ch = grid.block.mark
-            stdscr.addstr(Y, X, str(ch), curses.color_pair(grid.block.mark))
+            stdscr.addstr(Y, X, " ", curses.color_pair(grid.block.mark))
 
 def refresh_debug():
     print(grid)
