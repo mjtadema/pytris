@@ -26,7 +26,10 @@ gridsize = (20, 10)
 
 def main(stdscr):
     from game import start
-    start(stdscr, gridsize=gridsize)
+    try:
+        start(stdscr, gridsize=gridsize)
+    except KeyboardInterrupt:
+        exit()
 
 if __name__ == "__main__":
     import curses
