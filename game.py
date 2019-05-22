@@ -130,7 +130,10 @@ def refresh_curses():
             ch = str(int(ch))
             if ch == '0':
                 ch = ' '
-            stdscr.addch(y+y_off, x+x_off, ch)
+                stdscr.addch(y+y_off, x+x_off, ch, curses.color_pair(int(0)))
+            else:
+                stdscr.addch(y+y_off, x+x_off, ch, curses.color_pair(int(ch)))
+                
     refresh_block()
     stdscr.refresh()
 
@@ -139,7 +142,7 @@ def refresh_block():
         if y > 3:
             Y = y+y_off-buff
             X = x+x_off
-            stdscr.addch(Y, X, grid.block.mark)
+            stdscr.addch(Y, X, grid.block.mark, curses.color_pair(int(grid.block.mark)))
 
 def refresh_debug():
     print(grid)
@@ -180,7 +183,7 @@ def read_highscore():
     stdscr.addstr(6, 12+x_off, str(highscore))
 
 def write_highscore():
-    if score > highscore:
+    if score > int(highscore):
         import getpass
         name = getpass.getuser()
         with open(score_file, 'w') as f:
