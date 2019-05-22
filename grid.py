@@ -53,7 +53,7 @@ class Grid():
         self.grid_y, self.grid_x    = gridsize
         grid_buffer                 = self.grid_y+buff, self.grid_x
         self.insert_point           = (3, self.grid_x//2)
-        self.grid                   = np.zeros((gridsize))
+        self.grid                   = np.zeros((gridsize), dtype=np.int64)
         self.game_over              = False
         self.block                  = ''
 

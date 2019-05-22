@@ -28,25 +28,25 @@ import numpy as np
 blocktypes = {
         'line'  :{
             'coords': [ (0,0), (-1,0), (-2,0), (1,0) ], 
-            'mark'  : '1' },
+            'mark'  : 1 },
         't'     :{
             'coords': [ (-1,0), (0,-1), (0,0), (0,1) ],
-            'mark': '2' },
+            'mark': 2 },
         'square'  :{
             'coords': [ (0,0), (-1,0), (0,-1), (-1,-1) ], 
-            'mark'  : '3' },
+            'mark'  : 3 },
         'l'  :{
             'coords': [ (0,0), (-1,0), (1,0), (1,1) ], 
-            'mark'  : '4' },
+            'mark'  : 4 },
         'rev_l'  :{
             'coords': [ (0,0), (-1,0), (1,0), (1,-1) ], 
-            'mark'  : '5' },
+            'mark'  : 5 },
         'squig'  :{
             'coords': [ (0,0), (0,1), (1,1), (-1,0) ], 
-            'mark'  : '6' },
+            'mark'  : 6 },
         'rev_squig'  :{
             'coords': [ (0,0), (1,0), (1,1), (0,-1) ], 
-            'mark'  : '7' }
+            'mark'  : 7 }
         }
 available_blocks = allowed_blocks = list(blocktypes.keys())
 #allowed_blocks = ['test']

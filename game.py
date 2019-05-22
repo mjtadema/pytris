@@ -58,10 +58,14 @@ def start(init_stdscr=None, **kwargs):
         border()
         curses.curs_set(0)
         stdscr.nodelay(True)
+        curses.use_default_colors()
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i, i, -1);
         
     else:
         refresh = refresh_debug
         report = print
+        breakpoint()
 
     global score
     report_score()
@@ -127,12 +131,11 @@ def refresh_curses():
     clear_curses()
     for y, line in enumerate(grid[4:]):
         for x, ch in enumerate(line):
-            ch = str(int(ch))
-            if ch == '0':
+            if ch == 0:
                 ch = ' '
-                stdscr.addch(y+y_off, x+x_off, ch, curses.color_pair(int(0)))
+                stdscr.addstr(y+y_off, x+x_off, ch)
             else:
-                stdscr.addch(y+y_off, x+x_off, ch, curses.color_pair(int(ch)))
+                stdscr.addstr(y+y_off, x+x_off, str(ch), curses.color_pair(ch))
                 
     refresh_block()
     stdscr.refresh()
@@ -142,7 +145,8 @@ def refresh_block():
         if y > 3:
             Y = y+y_off-buff
             X = x+x_off
-            stdscr.addch(Y, X, grid.block.mark, curses.color_pair(int(grid.block.mark)))
+            ch = grid.block.mark
+            stdscr.addstr(Y, X, str(ch), curses.color_pair(grid.block.mark))
 
 def refresh_debug():
     print(grid)
