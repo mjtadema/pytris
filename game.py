@@ -85,7 +85,7 @@ def start(init_stdscr=None, **kwargs):
                 grid.block.move('down')
             try:
                 pick_move(get_move())
-            except curses.error:
+            except (curses.error, KeyError):
                 pass
             if grid.collision():
                 break
