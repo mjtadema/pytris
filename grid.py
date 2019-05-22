@@ -28,8 +28,11 @@ import copy
 import time
 from functools import partial
 import curses
+from pytris import gridsize
 
 buff = 4
+grid_y, grid_x = gridsize
+insert_point           = (3, grid_x//2)
 
 class Grid():
 
@@ -50,9 +53,7 @@ class Grid():
 
         """
         # Initialize game
-        self.grid_y, self.grid_x    = gridsize
-        grid_buffer                 = self.grid_y+buff, self.grid_x
-        self.insert_point           = (3, self.grid_x//2)
+        grid_buffer                 = grid_y+buff, grid_x
         self.grid                   = np.zeros((gridsize), dtype=np.int64)
         self.game_over              = False
         self.block                  = ''
@@ -71,19 +72,20 @@ class Grid():
         return iter(self.grid)
     def __len__(self):
         return len(self.grid)
-    def spawn(self):
-        self.block = block.Block(block_type='random', insert_point=self.insert_point)
+
+    def spawn(self, next_block):
+        self.block = next_block
 
     def at_edge(self):
         for y, x in self.block.position():
-            if x == self.grid_x or x < 0:
+            if x == grid_x or x < 0:
                 self.block.revert()
                 return True
         return False
 
     def at_bottom(self):
         for y, x in self.block.position():
-            if y == self.grid_y:
+            if y == grid_y:
                 self.block.revert()
                 return True
         return False
@@ -128,7 +130,7 @@ class Grid():
                 row_full += 1
                 # Delete the full row, insert a blank row up top
                 self.grid = np.delete(self.grid, y, axis=0)
-                self.grid = np.insert(self.grid, 0, np.zeros((1,self.grid_x)), axis=0)
+                self.grid = np.insert(self.grid, 0, np.zeros((1,grid_x)), axis=0)
         return row_full
 
     def put(self):

@@ -21,9 +21,10 @@
 #SOFTWARE.
 
 
-from grid import Grid, buff
+from grid import Grid, buff, insert_point
 import curses
 import time
+from block import Block
 
 stdscr = ''
 grid = ''
@@ -38,6 +39,8 @@ score_file = "highscore"
 name = 'nobody'
 highscore = 0
 block = "curses."
+block_list = []
+
 
 def start(init_stdscr=None, **kwargs):
     """
@@ -69,6 +72,12 @@ def start(init_stdscr=None, **kwargs):
         report = print
         breakpoint()
 
+    global block_list
+    block_list = [
+            Block(block_type='random', insert_point=insert_point)
+            for _ in range(2)
+            ]
+
     global score
     report_score()
     read_highscore()
@@ -77,7 +86,8 @@ def start(init_stdscr=None, **kwargs):
     global level
 
     while not grid.game_over:
-        grid.spawn()
+        grid.spawn(get_next_block())
+        show_next_block()
         t0 = time.time()
         while True:
             if time.time() - t0 > speed:
@@ -93,7 +103,7 @@ def start(init_stdscr=None, **kwargs):
 
         grid.put()
         score += grid.full_row()
-        if score // level >= 20:
+        if score // level >= 4:
             level += 1
             speed *= factor
         report_score()
@@ -106,6 +116,25 @@ def start(init_stdscr=None, **kwargs):
 
     if stdscr:
         stdscr.getch()
+
+def show_next_block():
+    for y in range(1,6):
+        y += 8
+        stdscr.addstr(y, 12+x_off, ' '*8)
+    global block_list
+    stdscr.addstr(8, 12+x_off, "Next:")
+    next_b = block_list[0]
+    y_ori = 9
+    x_ori = 10
+    for y, x in next_b:
+        m = next_b.mark
+        stdscr.addstr(y+y_ori, x+x_ori, ' ', curses.color_pair(m))
+
+
+def get_next_block():
+    global block_list
+    block_list.append(Block(block_type='random', insert_point=insert_point))
+    return block_list.pop(0)
 
 def pick_move(move):
     if move == 'fw':
