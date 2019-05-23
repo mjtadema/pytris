@@ -110,6 +110,7 @@ def start(init_stdscr=None, **kwargs):
                 if grid.collision():
                     break
                 refresh()
+                time.sleep(0.01)
 
             grid.put()
             score += grid.full_row()
