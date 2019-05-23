@@ -21,19 +21,13 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-from multiprocessing import Process
-import audio
-
 gridsize = (20, 10)
 
 def main(stdscr):
     from game import start
     try:
-        p_audio = Process(target=audio.start)
-        p_audio.start()
         start(stdscr, gridsize=gridsize)
     except KeyboardInterrupt:
-        p_audio.join()
         exit()
 
 if __name__ == "__main__":

@@ -25,6 +25,9 @@ from grid import Grid, buff, insert_point
 import curses
 import time
 from block import Block
+from multiprocessing import Process
+import audio
+
 
 stdscr = ''
 grid = ''
@@ -40,6 +43,7 @@ name = 'nobody'
 highscore = 0
 block = "curses."
 block_list = []
+p_audio = ''
 
 
 def start(init_stdscr=None, **kwargs):
@@ -85,6 +89,10 @@ def start(init_stdscr=None, **kwargs):
     global speed
     global level
 
+    global p_audio
+    p_audio = Process(target=audio.start)
+    p_audio.start()
+
     while not grid.game_over:
         grid.spawn(get_next_block())
         show_next_block()
@@ -112,10 +120,9 @@ def start(init_stdscr=None, **kwargs):
     stdscr.nodelay(False)
     report("Game Over!")
     write_highscore()
-    stdscr.getch()
-
     if stdscr:
         stdscr.getch()
+    p_audio.terminate()
 
 def show_next_block():
     for y in range(1,6):
