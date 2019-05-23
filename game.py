@@ -93,28 +93,32 @@ def start(init_stdscr=None, **kwargs):
     p_audio = Process(target=audio.start)
     p_audio.start()
 
-    while not grid.game_over:
-        grid.spawn(get_next_block())
-        show_next_block()
-        t0 = time.time()
-        while True:
-            if time.time() - t0 > speed:
-                t0 = time.time()
-                grid.block.move('down')
-            try:
-                pick_move(get_move())
-            except (curses.error, KeyError):
-                pass
-            if grid.collision():
-                break
-            refresh()
+    try:
+        while not grid.game_over:
+            grid.spawn(get_next_block())
+            show_next_block()
+            t0 = time.time()
+            while True:
+                if time.time() - t0 > speed:
+                    t0 = time.time()
+                    grid.block.move('down')
+                try:
+                    pick_move(get_move())
+                except (curses.error, KeyError):
+                    pass
+                if grid.collision():
+                    break
+                refresh()
 
-        grid.put()
-        score += grid.full_row()
-        if score // level >= 20:
-            level += 1
-            speed *= factor
-        report_score()
+            grid.put()
+            score += grid.full_row()
+            if score // level >= 20:
+                level += 1
+                speed *= factor
+            report_score()
+    except KeyboardInterrupt as e:
+        p_audio.terminate()
+        raise e
 
     refresh()
     stdscr.nodelay(False)
