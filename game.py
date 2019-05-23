@@ -26,7 +26,6 @@ import curses
 import time
 from block import Block
 from multiprocessing import Process
-import audio
 
 
 stdscr = ''
@@ -43,8 +42,6 @@ name = 'nobody'
 highscore = 0
 block = "curses."
 block_list = []
-p_audio = ''
-
 
 def start(init_stdscr=None, **kwargs):
     """
@@ -89,9 +86,13 @@ def start(init_stdscr=None, **kwargs):
     global speed
     global level
 
-    global p_audio
-    p_audio = Process(target=audio.start)
-    p_audio.start()
+    try:
+        import audio
+        p_audio = Process(target=audio.start)
+        p_audio.start()
+    except ImportError:
+        # simpleaudio is not installed
+        pass
 
     try:
         while not grid.game_over:
@@ -126,7 +127,8 @@ def start(init_stdscr=None, **kwargs):
     write_highscore()
     if stdscr:
         stdscr.getch()
-    p_audio.terminate()
+    if p_audio:
+        p_audio.terminate()
 
 def show_next_block():
     for y in range(1,6):
