@@ -127,8 +127,10 @@ def start(init_stdscr=None, **kwargs):
     write_highscore()
     if stdscr:
         stdscr.getch()
-    if p_audio:
+    try:
         p_audio.terminate()
+    except:
+        pass
 
 def show_next_block():
     for y in range(1,6):
