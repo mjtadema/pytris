@@ -42,6 +42,7 @@ name = 'nobody'
 highscore = 0
 block = "curses."
 block_list = []
+p_audio = ''
 
 def start(init_stdscr=None, **kwargs):
     """
@@ -86,6 +87,7 @@ def start(init_stdscr=None, **kwargs):
     global speed
     global level
 
+    global p_audio
     try:
         import audio
         p_audio = Process(target=audio.start)
@@ -119,7 +121,8 @@ def start(init_stdscr=None, **kwargs):
                 speed *= factor
             report_score()
     except KeyboardInterrupt as e:
-        p_audio.terminate()
+        if p_audio:
+            p_audio.terminate()
         raise e
 
     refresh()
