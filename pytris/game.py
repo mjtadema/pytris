@@ -21,16 +21,19 @@
 #SOFTWARE.
 
 
-from grid import Grid, buff, insert_point
+from .grid import Grid 
 import curses
 import time
-from block import Block
+from .block import Block
 from multiprocessing import Process
 
 
+gridsize = (20, 10)
+grid_y, grid_x = gridsize
+buff = 4
+insert_point = (3, grid_x//2)
 stdscr = ''
 grid = ''
-gridsize = ''
 y_off, x_off = (1,1)
 report = ''
 score = 0
@@ -53,7 +56,6 @@ def start(init_stdscr=None, **kwargs):
     """
     global grid
     global gridsize
-    gridsize = kwargs['gridsize']
     grid = Grid(gridsize)
 
     global report
@@ -89,7 +91,7 @@ def start(init_stdscr=None, **kwargs):
 
     global p_audio
     try:
-        import audio
+        from . import audio
         p_audio = Process(target=audio.start)
         p_audio.start()
     except ImportError:

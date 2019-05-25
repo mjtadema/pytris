@@ -21,7 +21,7 @@
 #SOFTWARE.
 
 
-import utils as ut
+from . import utils as ut
 import random as r
 import numpy as np
 

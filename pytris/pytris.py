@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #MIT License
 #
 #Copyright (c) 2019 Matthijs Tadema
@@ -21,50 +22,13 @@
 #SOFTWARE.
 
 
-import block
+def main(stdscr):
+    from .game import start
+    try:
+        start(stdscr)
+    except KeyboardInterrupt:
+        exit()
 
-def add_tuples(tup_a, b):
-    """
-    Adds two tuples together, or adds a tuple to a list of tuples
-    """
-    if not isinstance(tup_a, tuple):
-        raise TypeError("Input a has to be tuple")
-
-    add = lambda i, j: tuple( m + n for m, n in zip(i, j) )
-
-    if isinstance(b, tuple):
-        return tuple(add(tup_a, b))
-    elif isinstance(b, list):
-        return list([
-                add(tup_a, tup_b)
-                for tup_b in b
-                ])
-    else:
-        raise TypeError("input b has to be list or tup")
-
-def switch_tuple(a):
-    if isinstance(a, tuple):
-        i, j = a
-        out = (j, i)
-    elif isinstance(a, list):
-        out = [
-                (j, i)
-                for i, j in a
-                ]
-    else:
-        raise TypeError
-    return out
-
-def invert_tuple(a):
-    out = ''
-    if isinstance(a, tuple):
-        i, j = a
-        out = (-i, -j)
-    elif isinstance(a, list):
-        out = [
-                (-i, -j)
-                for i, j in a
-                ]
-    else:
-        raise TypeError
-    return out
+def wrap():
+    import curses
+    curses.wrapper(main)

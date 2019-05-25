@@ -22,17 +22,12 @@
 
 
 import numpy as np
-import block
-import utils as ut
+from . import block
+from . import utils as ut
 import copy
 import time
 from functools import partial
 import curses
-from pytris import gridsize
-
-buff = 4
-grid_y, grid_x = gridsize
-insert_point           = (3, grid_x//2)
 
 class Grid():
 
@@ -53,6 +48,9 @@ class Grid():
 
         """
         # Initialize game
+        from .game import gridsize, buff, grid_y, grid_x
+
+        self.grid_y, self.grid_x = gridsize
         grid_buffer                 = grid_y+buff, grid_x
         self.grid                   = np.zeros((gridsize), dtype=np.int64)
         self.game_over              = False
@@ -78,14 +76,14 @@ class Grid():
 
     def at_edge(self):
         for y, x in self.block.position():
-            if x == grid_x or x < 0:
+            if x == self.grid_x or x < 0:
                 self.block.revert()
                 return True
         return False
 
     def at_bottom(self):
         for y, x in self.block.position():
-            if y == grid_y:
+            if y == self.grid_y:
                 self.block.revert()
                 return True
         return False
@@ -130,7 +128,7 @@ class Grid():
                 row_full += 1
                 # Delete the full row, insert a blank row up top
                 self.grid = np.delete(self.grid, y, axis=0)
-                self.grid = np.insert(self.grid, 0, np.zeros((1,grid_x)), axis=0)
+                self.grid = np.insert(self.grid, 0, np.zeros((1,self.grid_x)), axis=0)
         return row_full
 
     def put(self):
