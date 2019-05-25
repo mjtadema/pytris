@@ -1,6 +1,10 @@
 # PyTris
 Proof of concept tetris game in python using curses!
-Tip: Install "simpleaudio" using pip to get sound! :D
+
+![Screenshot](/screenshots/Screenshot_20190525_190350.png?raw=true "PyTris in action")
+
+# Install
+install by running `pip install --user git+https://github.com/mjtadema/pytris.git`
 
 # Features
 Moving of blocks, removing of full rows, dying when reaching the top

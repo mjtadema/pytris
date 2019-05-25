@@ -21,9 +21,8 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-
 def main(stdscr):
-    from .game import start
+    from pytris.game import start
     try:
         start(stdscr)
     except KeyboardInterrupt:
@@ -32,3 +31,6 @@ def main(stdscr):
 def wrap():
     import curses
     curses.wrapper(main)
+
+if __name__ == "__main__":
+    wrap()

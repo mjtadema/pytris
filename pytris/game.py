@@ -26,7 +26,7 @@ import curses
 import time
 from .block import Block
 from multiprocessing import Process
-
+from pathlib import Path
 
 gridsize = (20, 10)
 grid_y, grid_x = gridsize
@@ -40,7 +40,7 @@ score = 0
 speed = 1.0
 factor = 0.6
 level = 1
-score_file = "highscore"
+score_file = f"{Path.home()}/.pytris_highscore"
 name = 'nobody'
 highscore = 0
 block = "curses."

@@ -15,6 +15,7 @@ setuptools.setup(
         long_description_content_type="text/markdown",
         url="https://github.com/mjtadema/pytris",
         packages=setuptools.find_packages(),
+        py_modules=['pytris'],
         classifiers=[
             "Programming Language :: Python :: 3",
             "License :: OSI Approved :: MIT License",
