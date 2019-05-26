@@ -27,6 +27,7 @@ import time
 from .block import Block
 from multiprocessing import Process
 from pathlib import Path
+import argparse
 
 gridsize = (20, 10)
 grid_y, grid_x = gridsize
@@ -54,6 +55,20 @@ def start(init_stdscr=None, **kwargs):
     Moves the block until there is a collision
     Loop until game over
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--audio','-a',action='store_true', default=False)
+    args = parser.parse_args()
+    if args.audio:
+        global p_audio
+        try:
+            from . import audio
+            p_audio = Process(target=audio.start)
+            p_audio.start()
+        except ImportError:
+            # simpleaudio is not installed
+            pass
+
+
     global grid
     global gridsize
     grid = Grid(gridsize)
@@ -88,15 +103,6 @@ def start(init_stdscr=None, **kwargs):
 
     global speed
     global level
-
-    global p_audio
-    try:
-        from . import audio
-        p_audio = Process(target=audio.start)
-        p_audio.start()
-    except ImportError:
-        # simpleaudio is not installed
-        pass
 
     try:
         while not grid.game_over:
