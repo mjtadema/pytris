@@ -24,10 +24,12 @@
 from .grid import Grid 
 import curses
 import time
-from .block import Block
+from .block import blocks
 from multiprocessing import Process
 from pathlib import Path
 import argparse
+import copy
+import random
 
 gridsize = (20, 10)
 grid_y, grid_x = gridsize
@@ -45,7 +47,7 @@ block_list = []
 p_audio = ''
 
 class Game():
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, gridsize = (20, 10), **kwargs):
         """ 
         Initialize game state
 
@@ -58,8 +60,6 @@ class Game():
             start_audio()
 
         # Initialze grid
-        self.grid
-        self.gridsize = (20, 10)
         self.grid = Grid(gridsize)
 
         self.report
@@ -72,9 +72,11 @@ class Game():
         self.factor = 0.6
         self.level = 1
 
-        # Initialize random bag
+        # Initialize block queue
+        self.queue = Queue()
 
-
+        # Initialize screen
+        self.screen = Screen()
 
     def parse_args(self):
         parser = argparse.ArgumentParser()
@@ -93,31 +95,39 @@ class Game():
                 pass
             pass
 
-    def start_screen(self):
-            self.stdscr = init_stdscr
-            self.refresh = refresh_curses
-            self.report = report_curses
-            border()
-            curses.curs_set(0)
-            self.stdscr.nodelay(True)
-            curses.use_default_colors()
-            for i in range(0, curses.COLORS):
-                curses.init_pair(i, -1, i);
 
-class Bag():
+class Screen():
+    """
+    Screen acts as the interface to curses
+    """
     def __init__(self, *args, **kwargs):
-        self.contents = []
+        self.screen = init_stdscr
+        self.refresh = refresh_curses
+        self.report = report_curses
+        border()
+        curses.curs_set(0)
+        self.stdscr.nodelay(True)
+        curses.use_default_colors()
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i, -1, i);
+
+class Queue():
+    """
+    The queue contains 1 copy of each block
+    When the bag is depleted, it is again filled with blocks in random order
+    Blocks are "popped" from the stack
+    """
+    def __init__(self, *args, **kwargs):
+        self.stack = []
     def fill_random(self):
-        self.contents = [
-                Block(block_type='random', insert_point=insert_point)
-                for _ in range(2)
-                ]
+        tmp = copy.deepcopy(blocks)
+        random.shuffle(tmp)
+        for b in tmp:
+            self.stack += b()
     def pop(self):
-        try:
-            return pop(self.contents)
-        except:
+        if len(self.stack) < 2:
             self.fill_random()
-            return pop(self.contents)
+        return self.stack.pop(0)
 
 
 def start(init_stdscr=None, **kwargs):
