@@ -25,29 +25,6 @@ from . import utils as ut
 import random as r
 import numpy as np
 
-blocktypes = {
-        'line'  :{
-            'coords': [ (0,0), (-1,0), (-2,0), (1,0) ], 
-            'mark'  : 1 },
-        't'     :{
-            'coords': [ (-1,0), (0,-1), (0,0), (0,1) ],
-            'mark': 2 },
-        'square'  :{
-            'coords': [ (0,0), (-1,0), (0,-1), (-1,-1) ], 
-            'mark'  : 3 },
-        'l'  :{
-            'coords': [ (0,0), (-1,0), (1,0), (1,1) ], 
-            'mark'  : 4 },
-        'rev_l'  :{
-            'coords': [ (0,0), (-1,0), (1,0), (1,-1) ], 
-            'mark'  : 5 },
-        'squig'  :{
-            'coords': [ (0,0), (0,1), (1,1), (-1,0) ], 
-            'mark'  : 6 },
-        'rev_squig'  :{
-            'coords': [ (0,0), (1,0), (1,1), (0,-1) ], 
-            'mark'  : 7 }
-        }
 available_blocks = allowed_blocks = list(blocktypes.keys())
 #allowed_blocks = ['test']
 movements = {
@@ -163,3 +140,71 @@ class Block():
         # Else it was a translation
         self.anchor = self.prev_anc
 
+def I(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coords = [ (0,0), (-1,0), (-2,0), (1,0) ]
+        self.mark = 1
+
+def T(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coords = [ (-1,0), (0,-1), (0,0), (0,1) ]
+        self.mark = 2
+
+def O(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coords = [ (0,0), (-1,0), (0,-1), (-1,-1) ]
+        self.mark = 3
+
+def L(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coords = [ (0,0), (-1,0), (1,0), (1,1) ]
+        self.mark = 4
+
+def J(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coords = [ (0,0), (-1,0), (1,0), (1,-1) ]
+        self.mark = 5
+
+def S(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coord = [ (0,0), (0,1), (1,1), (-1,0) ]
+        self.mark = 6
+
+def Z(Block):
+    def __init__(self, *args, **kwargs):
+        super(self, Line).__init__(*args, **kwargs)
+        self.coord = [ (0,0), (1,0), (1,1), (0,-1) ]
+        self.mark = 7
+
+blocks = [I,T,O,L,J,S,Z]
+
+
+blocktypes = {
+        'line'  :{
+            'coords': [ (0,0), (-1,0), (-2,0), (1,0) ], 
+            'mark'  : 1 },
+        't'     :{
+            'coords': [ (-1,0), (0,-1), (0,0), (0,1) ],
+            'mark': 2 },
+        'square'  :{
+            'coords': [ (0,0), (-1,0), (0,-1), (-1,-1) ], 
+            'mark'  : 3 },
+        'l'  :{
+            'coords': [ (0,0), (-1,0), (1,0), (1,1) ], 
+            'mark'  : 4 },
+        'rev_l'  :{
+            'coords': [ (0,0), (-1,0), (1,0), (1,-1) ], 
+            'mark'  : 5 },
+        'squig'  :{
+            'coords': [ (0,0), (0,1), (1,1), (-1,0) ], 
+            'mark'  : 6 },
+        'rev_squig'  :{
+            'coords': [ (0,0), (1,0), (1,1), (0,-1) ], 
+            'mark'  : 7 }
+        }
