@@ -37,16 +37,88 @@ stdscr = ''
 grid = ''
 y_off, x_off = (1,1)
 report = ''
-score = 0
-speed = 1.0
-factor = 0.6
-level = 1
 score_file = f"{Path.home()}/.pytris_highscore"
 name = 'nobody'
 highscore = 0
 block = "curses."
 block_list = []
 p_audio = ''
+
+class Game():
+    def __init__(self, *args, **kwargs):
+        """ 
+        Initialize game state
+
+        """
+        # Parse command line arguments
+        parse_args()
+
+        # Start audio
+        if self.args.audio:
+            start_audio()
+
+        # Initialze grid
+        self.grid
+        self.gridsize = (20, 10)
+        self.grid = Grid(gridsize)
+
+        self.report
+        report_score()
+        read_highscore()
+
+        # Initialize some values
+        self.score = 0
+        self.speed = 1.0
+        self.factor = 0.6
+        self.level = 1
+
+        # Initialize random bag
+
+
+
+    def parse_args(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--audio','-a',action='store_true', default=False)
+        self.args = parser.parse_args()
+
+    def start_audio(self):
+        # Start audio if requested
+        if args.audio:
+            try:
+                from . import audio
+                self.p_audio = Process(target=audio.start)
+                self.p_audio.start()
+            except ImportError:
+                # simpleaudio is not installed
+                pass
+            pass
+
+    def start_screen(self):
+            self.stdscr = init_stdscr
+            self.refresh = refresh_curses
+            self.report = report_curses
+            border()
+            curses.curs_set(0)
+            self.stdscr.nodelay(True)
+            curses.use_default_colors()
+            for i in range(0, curses.COLORS):
+                curses.init_pair(i, -1, i);
+
+class Bag():
+    def __init__(self, *args, **kwargs):
+        self.contents = []
+    def fill_random(self):
+        self.contents = [
+                Block(block_type='random', insert_point=insert_point)
+                for _ in range(2)
+                ]
+    def pop(self):
+        try:
+            return pop(self.contents)
+        except:
+            self.fill_random()
+            return pop(self.contents)
+
 
 def start(init_stdscr=None, **kwargs):
     """
