@@ -25,7 +25,7 @@ from . import utils as ut
 import random as r
 import numpy as np
 
-available_blocks = allowed_blocks = list(blocktypes.keys())
+#available_blocks = allowed_blocks = list(blocktypes.keys())
 #allowed_blocks = ['test']
 movements = {
         'down' : (1,0),
@@ -70,11 +70,6 @@ class Block():
 
         """
         # Initialize block definition
-        if kwargs['block_type'] == 'random':
-            block_type  = pick_block()
-        block_def       = blocktypes[block_type]
-        self.definition = block_def['coords']
-        self.mark       = block_def['mark']
         self.anchor     = kwargs['insert_point']
         self.rotation   = self.definition
 

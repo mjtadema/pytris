@@ -24,7 +24,7 @@
 def main(stdscr):
     from pytris.game import Game
     try:
-        game = Game(screen = stdscreen)
+        game = Game(screen = stdscr)
         game.start
     except KeyboardInterrupt:
         exit()

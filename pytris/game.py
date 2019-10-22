@@ -22,20 +22,20 @@
 
 
 from .grid import Grid 
+from .screen import Screen
 import curses
 import time
+from time import sleep
 from .block import blocks
 from multiprocessing import Process
 from pathlib import Path
-import argparse
+from .utils import parse_args
 import copy
 import random
 
 gridsize = (20, 10)
 grid_y, grid_x = gridsize
-buff = 4
 insert_point = (3, grid_x//2)
-y_off, x_off = (1,1)
 report = ''
 score_file = f"{Path.home()}/.pytris_highscore"
 name = 'nobody'
@@ -62,13 +62,13 @@ class Game():
             self.p_audio = start_audio()
 
         # Initialze grid
-        self.grid = Grid(gridsize)
+        #self.grid = Grid(gridsize)
 
         # Initialize block queue
-        self.queue = Queue()
+        #self.queue = Queue()
 
         # Initialize screen
-        self.screen = Screen(kwargs['screen'])
+        self.screen = Screen(gridsize, kwargs['screen'])
 
         # Initialize some values
         self.score = 0
@@ -76,10 +76,16 @@ class Game():
         self.factor = 0.6
         self.level = 1
 
-    def parse_args(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--audio','-a',action='store_true', default=False)
-        return parser.parse_args()
+        if self.args.debug:
+            self.test()
+        else:
+            self.start()
+    
+
+
+    def test(self):
+        self.screen.print("Hello world!") 
+        sleep(5)
 
     def start(self):
         """
@@ -137,21 +143,6 @@ def start_audio(self):
         pass
     pass
 
-
-class Screen():
-    """
-    Screen acts as the interface to curses
-    """
-    def __init__(self, screen, *args, **kwargs):
-        self.screen = screen
-        self.refresh = refresh_curses
-        self.report = report_curses
-        border()
-        curses.curs_set(0)
-        self.screen.nodelay(True)
-        curses.use_default_colors()
-        for i in range(0, curses.COLORS):
-            curses.init_pair(i, -1, i);
 
 class Queue():
     """
@@ -337,21 +328,6 @@ def report_score():
     stdscr.addstr(1, 12+x_off, "SCORE: "+str(score))
     stdscr.addstr(2, 12+x_off, "LEVEL: "+str(level))
     stdscr.refresh()
-
-def report_curses(*message):
-    stdscr.addstr(4, 12+x_off, " ".join(message))
-    stdscr.refresh()
-
-def border():
-    top = "+----------+"
-    bottom = "+----------+"
-    side = "|          |"
-    stdscr.addstr(0, 0, top)
-    grid_y, grid_x = gridsize
-    for y in range(grid_y-buff):
-        Y = y+1
-        stdscr.addstr(Y, 0, side)
-    stdscr.addstr(grid_y-buff+1, 0, bottom)
 
 def read_highscore():
     global name
