@@ -30,6 +30,10 @@ from functools import partial
 import curses
 
 class Grid():
+    """
+    Grid now keeps track of the underlying grid of immobile blocks
+
+    """
 
     def __init__(self, gridsize):
         """

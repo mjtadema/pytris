@@ -35,8 +35,6 @@ gridsize = (20, 10)
 grid_y, grid_x = gridsize
 buff = 4
 insert_point = (3, grid_x//2)
-stdscr = ''
-grid = ''
 y_off, x_off = (1,1)
 report = ''
 score_file = f"{Path.home()}/.pytris_highscore"
@@ -47,24 +45,30 @@ block_list = []
 p_audio = ''
 
 class Game():
+    """
+    Game instance holds the state of the game
+    It initializes the screen, audio, 
+    """
     def __init__(self, *args, gridsize = (20, 10), **kwargs):
         """ 
         Initialize game state
 
         """
         # Parse command line arguments
-        parse_args()
+        self.args = parse_args()
 
         # Start audio
         if self.args.audio:
-            start_audio()
+            self.p_audio = start_audio()
 
         # Initialze grid
         self.grid = Grid(gridsize)
 
-        self.report
-        report_score()
-        read_highscore()
+        # Initialize block queue
+        self.queue = Queue()
+
+        # Initialize screen
+        self.screen = Screen(kwargs['screen'])
 
         # Initialize some values
         self.score = 0
@@ -72,41 +76,79 @@ class Game():
         self.factor = 0.6
         self.level = 1
 
-        # Initialize block queue
-        self.queue = Queue()
-
-        # Initialize screen
-        self.screen = Screen()
-
     def parse_args(self):
         parser = argparse.ArgumentParser()
         parser.add_argument('--audio','-a',action='store_true', default=False)
-        self.args = parser.parse_args()
+        return parser.parse_args()
 
-    def start_audio(self):
-        # Start audio if requested
-        if args.audio:
-            try:
-                from . import audio
-                self.p_audio = Process(target=audio.start)
-                self.p_audio.start()
-            except ImportError:
-                # simpleaudio is not installed
-                pass
+    def start(self):
+        """
+        The main game loop
+        """
+
+        try:
+            while not grid.game_over:
+                grid.spawn(get_next_block())
+                show_next_block()
+                t0 = time.time()
+                while True:
+                    if time.time() - t0 > speed:
+                        t0 = time.time()
+                        grid.block.move('down')
+                    try:
+                        pick_move(get_move())
+                    except (curses.error, KeyError):
+                        pass
+                    if grid.collision():
+                        break
+                    refresh()
+                    time.sleep(0.01)
+
+                grid.put()
+                score += grid.full_row()
+                if score // level >= 20:
+                    level += 1
+                    speed *= factor
+                report_score()
+        except KeyboardInterrupt as e:
+            if p_audio:
+                p_audio.terminate()
+            raise e
+
+        refresh()
+        stdscr.nodelay(False)
+        report("Game Over!")
+        write_highscore()
+        if stdscr:
+            stdscr.getch()
+        try:
+            p_audio.terminate()
+        except:
             pass
+
+def start_audio(self):
+    try:
+        from . import audio
+        p_audio = Process(target=audio.start)
+        p_audio.start()
+        return p_audio
+    except ImportError:
+        # simpleaudio is not installed
+        pass
+    pass
 
 
 class Screen():
     """
     Screen acts as the interface to curses
     """
-    def __init__(self, *args, **kwargs):
-        self.screen = init_stdscr
+    def __init__(self, screen, *args, **kwargs):
+        self.screen = screen
         self.refresh = refresh_curses
         self.report = report_curses
         border()
         curses.curs_set(0)
-        self.stdscr.nodelay(True)
+        self.screen.nodelay(True)
         curses.use_default_colors()
         for i in range(0, curses.COLORS):
             curses.init_pair(i, -1, i);

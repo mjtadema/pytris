@@ -22,9 +22,10 @@
 #SOFTWARE.
 
 def main(stdscr):
-    from pytris.game import start
+    from pytris.game import Game
     try:
-        start(stdscr)
+        game = Game(screen = stdscreen)
+        game.start
     except KeyboardInterrupt:
         exit()
 
