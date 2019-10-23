@@ -52,13 +52,9 @@ class Grid():
 
         """
         # Initialize game
-        from .game import gridsize, buff, grid_y, grid_x
-
+        self.gridsize = gridsize
         self.grid_y, self.grid_x = gridsize
-        grid_buffer                 = grid_y+buff, grid_x
         self.grid                   = np.zeros((gridsize), dtype=np.int64)
-        self.game_over              = False
-        self.block                  = ''
 
     # Some methods to take advantage of numpy arrays
     def __str__(self):

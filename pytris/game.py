@@ -35,7 +35,7 @@ import random
 
 gridsize = (20, 10)
 grid_y, grid_x = gridsize
-insert_point = (3, grid_x//2)
+
 report = ''
 score_file = f"{Path.home()}/.pytris_highscore"
 name = 'nobody'
@@ -62,13 +62,13 @@ class Game():
             self.p_audio = start_audio()
 
         # Initialze grid
-        #self.grid = Grid(gridsize)
+        self.grid = Grid(gridsize)
 
         # Initialize block queue
-        #self.queue = Queue()
+        self.queue = Queue(self.grid)
 
         # Initialize screen
-        self.screen = Screen(gridsize, kwargs['screen'])
+        #self.screen = Screen(gridsize, kwargs['screen'])
 
         # Initialize some values
         self.score = 0
@@ -76,16 +76,17 @@ class Game():
         self.factor = 0.6
         self.level = 1
 
-        if self.args.debug:
-            self.test()
-        else:
-            self.start()
-    
 
 
     def test(self):
-        self.screen.print("Hello world!") 
-        sleep(5)
+        #self.screen.print("Hello world!")
+        print("test")
+        print(self.queue)
+        print(self.grid)
+        for _ in range(7):
+            print(self.queue.pop())
+            print(self.queue)
+
 
     def start(self):
         """
@@ -150,15 +151,22 @@ class Queue():
     When the bag is depleted, it is again filled with blocks in random order
     Blocks are "popped" from the stack
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, grid, *args, **kwargs):
+        self.grid = grid
         self.stack = []
+        self.fill_random()
+    def __str__(self):
+        tmp = ""
+        for b in self.stack:
+            tmp += b.__class__.__name__ + ","
+        return tmp
     def fill_random(self):
         tmp = copy.deepcopy(blocks)
         random.shuffle(tmp)
         for b in tmp:
-            self.stack += b()
+            self.stack.append(b(grid = self.grid))
     def pop(self):
-        if len(self.stack) < 2:
+        if len(self.stack) <= 2:
             self.fill_random()
         return self.stack.pop(0)
 

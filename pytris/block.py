@@ -24,6 +24,7 @@
 from . import utils as ut
 import random as r
 import numpy as np
+from .screen import screen_params
 
 #available_blocks = allowed_blocks = list(blocktypes.keys())
 #allowed_blocks = ['test']
@@ -51,8 +52,10 @@ def pick_block():
     picked = available_blocks.pop(ri)
     return picked
 
+
+
 class Block():
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Base block object
             init(type, insert)      : Spawns new block of type "type" at "insert"
@@ -69,8 +72,13 @@ class Block():
             rotation                : Current relative rotation to anchor
 
         """
+
+        self.grid = kwargs['grid']
+        grid_y, grid_x = self.grid.gridsize
+        insert_point = (0, grid_x // 2)
+
         # Initialize block definition
-        self.anchor     = kwargs['insert_point']
+        self.anchor     = insert_point
         self.rotation   = self.definition
 
         # Save previous coords/anchor
@@ -82,10 +90,10 @@ class Block():
         self.fw_rv      = (ut.switch_tuple, ut.invert_tuple)
 
     def __str__(self):
-        grid = np.zeros((14, 10)) # This is now broken
-        for y, x in self.position():
-            grid[y][x] = self.mark
-        return str(grid)
+        #grid = np.zeros((14, 10)) # This is now broken
+        #for y, x in self.position():
+        #    grid[y][x] = self.mark
+        return self.__class__.__name__
     __repr__ = __str__
     def __iter__(self):
         return(iter(self.position()))
@@ -135,47 +143,53 @@ class Block():
         # Else it was a translation
         self.anchor = self.prev_anc
 
-def I(Block):
+class I(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coords = [ (0,0), (-1,0), (-2,0), (1,0) ]
+        self.definition = [ (0,0), (-1,0), (-2,0), (1,0) ]
         self.mark = 1
+        super().__init__(*args, **kwargs)
 
-def T(Block):
+class T(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coords = [ (-1,0), (0,-1), (0,0), (0,1) ]
+        self.definition = [ (-1,0), (0,-1), (0,0), (0,1) ]
         self.mark = 2
+        super().__init__(*args, **kwargs)
 
-def O(Block):
+class O(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coords = [ (0,0), (-1,0), (0,-1), (-1,-1) ]
+        self.definition = [ (0,0), (-1,0), (0,-1), (-1,-1) ]
         self.mark = 3
+        super().__init__(*args, **kwargs)
+    def rotate(self):
+        """
+        Overload rotate method because O block doesn't rotate
+        :return:
+        """
+        pass
 
-def L(Block):
+class L(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coords = [ (0,0), (-1,0), (1,0), (1,1) ]
+        self.definition = [ (0,0), (-1,0), (1,0), (1,1) ]
         self.mark = 4
+        super().__init__(*args, **kwargs)
 
-def J(Block):
+class J(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coords = [ (0,0), (-1,0), (1,0), (1,-1) ]
+        self.definition = [ (0,0), (-1,0), (1,0), (1,-1) ]
         self.mark = 5
+        super().__init__(*args, **kwargs)
 
-def S(Block):
+class S(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coord = [ (0,0), (0,1), (1,1), (-1,0) ]
+        self.definition = [ (0,0), (0,1), (1,1), (-1,0) ]
         self.mark = 6
+        super().__init__(*args, **kwargs)
 
-def Z(Block):
+class Z(Block):
     def __init__(self, *args, **kwargs):
-        super(self, Line).__init__(*args, **kwargs)
-        self.coord = [ (0,0), (1,0), (1,1), (0,-1) ]
+        self.definition = [ (0,0), (1,0), (1,1), (0,-1) ]
         self.mark = 7
+        super().__init__(*args, **kwargs)
 
 blocks = [I,T,O,L,J,S,Z]
 
