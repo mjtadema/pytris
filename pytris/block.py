@@ -55,21 +55,30 @@ def pick_block():
 
 
 class Block():
+    """
+    Base block class, is inherited from to form individual blocks
+    """
     def __init__(self, *args, **kwargs):
         """
         Base block object
-            init(type, insert)      : Spawns new block of type "type" at "insert"
+            init()                  : Spawns new block of type "type" at "insert"
 
         Exposes following methods:
-            rotate(fw)              : Rotates the block forward (True) or reverse (False)
-            move(move)              : Moves the anchor by move tuple( y, x ) 
-            position()              : Actual coordinates of all squares
+            clockwise()             : Rotate the block clockwise
+            countercw()             : Rotate the block counterclockwise
+            up()                    : Move up
+            down()                  : Move down
+            left()                  : Move left
+            right()                 : Move right
+            position()              : Current coordinates of all squares
 
         And properties:
             anchor                  : tuple( y, x ) to define anchor point
             mark                    : character to draw on the grid
             definition              : Base definition (constant)
             rotation                : Current relative rotation to anchor
+
+        Also adds a __dict__ object which acts as a log for the anchor positions and the rotation
 
         """
 
@@ -163,7 +172,7 @@ class O(Block):
     def rotate(self):
         """
         Overload rotate method because O block doesn't rotate
-        :return:
+        :return: None
         """
         pass
 
