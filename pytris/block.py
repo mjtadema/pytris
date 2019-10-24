@@ -51,7 +51,7 @@ class Block():
 
         self.game = game
         grid_y, grid_x = self.game.grid.gridsize
-        insert_point = (0, grid_x // 2)
+        insert_point = (3, grid_x // 2)
         self.mobile = True
 
         # Initialize block definition
