@@ -1,7 +1,5 @@
-import sys
-if sys.argv[1] == "test":
-    from .test_all import unittest
-    unittest.main()
+from .utils import parse_args
+args = parse_args()
 
-from .pytris import main
-main()
+if args.test:
+    from .test_all import *

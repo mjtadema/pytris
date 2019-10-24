@@ -28,6 +28,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--audio','-a',action='store_true', default=False)
     parser.add_argument('--debug','-d',action='store_true', default=True)
+    parser.add_argument('--test','-t',action='store_true', default=False)
     return parser.parse_args()
 
 def add_tuples(tup_a, b):
