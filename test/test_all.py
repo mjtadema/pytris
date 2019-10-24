@@ -3,7 +3,7 @@ import pytest
 @pytest.fixture
 def game():
     from pytris.game import Game
-    return Game()
+    return Game(debug = True)
 
 def test_game(game):
     assert game
@@ -24,11 +24,49 @@ def test_queue(game):
             assert len(game.queue) == 8
         assert isinstance(game.queue.pop(), Block)
 
-@pytest.fixture
-def screen():
-    #from pytris.screen import Screen
-    #return Screen(debug = True)
-    pass
-
-def test_screen(screen):
-    pass
+def test_block(game):
+    """
+    Tests block functionality
+      0 1 2 3 4 5 ...
+    0
+    1
+    2
+    3
+    4
+    ...
+    """
+    block = game.queue.pop()
+    from pytris.block import Block
+    assert isinstance(block, Block)
+    # Down
+    now = block.position()
+    block.down()
+    next = block.position()
+    for (ax, ay), (bx, by) in zip(now, next):
+        assert by == ay + 1
+    # Up
+    now = block.position()
+    block.up()
+    next = block.position()
+    for (ax, ay), (bx, by) in zip(now, next):
+        assert by == ay - 1
+    # Left
+    now = block.position()
+    block.left()
+    next = block.position()
+    for (ax, ay), (bx, by) in zip(now, next):
+        assert bx == ax - 1
+    # Right
+    now = block.position()
+    block.right()
+    next = block.position()
+    for (ax, ay), (bx, by) in zip(now, next):
+        assert bx == ax + 1
+    # Clockwise
+    for _ in range(6):
+        block.clockwise()
+    assert 0 < block.rotation[-1] < len(block.states)
+    # Countercw
+    for _ in range(6):
+        block.countercw()
+    assert 0 < block.rotation[-1] < len(block.states)
