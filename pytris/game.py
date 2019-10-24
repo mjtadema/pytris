@@ -74,7 +74,7 @@ class Game():
         self.screen = Screen(self, **kwargs)
 
         # Initialze grid
-        self.grid = Grid(gridsize)
+        self.grid = Grid(self)
 
         # Initialize block queue
         self.queue = Queue(self)
