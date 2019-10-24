@@ -22,19 +22,15 @@
 
 
 from .grid import Grid 
-from .screen import Screen
+from .ui import Screen
 import curses
 import time
-from time import sleep
 from .block import blocks
 from multiprocessing import Process
 from pathlib import Path
 from .utils import parse_args
 import copy
 import random
-
-gridsize = (20, 10)
-grid_y, grid_x = gridsize
 
 report = ''
 score_file = f"{Path.home()}/.pytris_highscore"
@@ -47,15 +43,22 @@ p_audio = ''
 class Game():
     """
     Game instance holds the state of the game
-    It initializes the screen, audio, 
+    It initializes the screen, audio,
+
+    Contains:
+        grid    : grid of immobile blocks
+        block   : mobile block object
+        p_audio : audio process
+        queue   : queue of next blocks
+        screen  : abstraction to curses
     """
     def __init__(self, *args, gridsize = (20, 10), **kwargs):
         """ 
         Initialize game state
 
         """
-        # Parse command line arguments
-        self.args = parse_args()
+        # Move arguments to attributes
+        self.gridsize = gridsize
 
         # Start audio
         if self.args.audio:
@@ -67,60 +70,99 @@ class Game():
         # Initialize block queue
         self.queue = Queue(self.grid)
 
+        # Initialize first block
+        self.block = self.queue.pop()
+
         # Initialize screen
-        if not kwargs['debug']:
-            self.screen = Screen(gridsize, kwargs['screen'])
+        self.screen = Screen(game, **kwargs)
 
         # Initialize some values
+        self.gameover = False
         self.score = 0
         self.speed = 1.0
         self.factor = 0.6
         self.level = 1
+        self.t = 0
+
+    def tick(self):
+        """
+        Check if a tick has passed
+        :return: Bool
+        """
+        if time.time() - self.t > self.speed:
+            self.t = time.time()
+            return True
+        else:
+            return False
 
     def start(self):
         """
         The main game loop
         """
-
         try:
-            while not grid.game_over:
-                grid.spawn(get_next_block())
-                show_next_block()
-                t0 = time.time()
+            while not self.gameover:
+
+                if not self.block.mobile:
+                    # Pop a new block from queue
+                    self.block = self.queue.pop()
+
+                # Keep track of game ticks
+                # speed basically determines the time a tick takes
                 while True:
-                    if time.time() - t0 > speed:
-                        t0 = time.time()
-                        grid.block.move('down')
+                    # Move the block down every "tick"
+                    if self.tick():
+                        if not self.block.down():
+                            # Means a collision as occurred
+                            break
+
+                    # Try to get a command every cycle
                     try:
-                        pick_move(get_move())
+                        self.screen.command()
                     except (curses.error, KeyError):
+                        # Ignore curses errors
                         pass
-                    if grid.collision():
-                        break
-                    refresh()
+
+                    # Limit CPU cycles, IMPORTANT
                     time.sleep(0.01)
 
-                grid.put()
-                score += grid.full_row()
-                if score // level >= 20:
-                    level += 1
-                    speed *= factor
-                report_score()
+                # After every collision:
+                # Check if there is a full row in the grid
+                self.grid.full_row()
+
+                # At every 20 points, increment level and speed
+                self.check_score()
+
+
         except KeyboardInterrupt as e:
             if p_audio:
                 p_audio.terminate()
             raise e
 
-        refresh()
-        stdscr.nodelay(False)
-        report("Game Over!")
-        write_highscore()
-        if stdscr:
-            stdscr.getch()
+        self.screen.endgame()
+        #refresh()
+        #stdscr.nodelay(False)
+        #report("Game Over!")
+        #write_highscore()
+
+        #if stdscr:
+        #    stdscr.getch()
         try:
             p_audio.terminate()
         except:
             pass
+
+    def check_score(self):
+        """
+        Check if the level and speed should be incremented
+        :return: Bool
+        """
+        if self.score // self.level >= 20:
+            self.level += 1
+            self.speed *= self.factor
+            self.screen.data()
+            return True
+        else:
+            return False
 
 def start_audio(self):
     try:
@@ -138,25 +180,32 @@ class Queue(list):
     """
     The queue contains 1 copy of each block
     When the bag is depleted, it is again filled with blocks in random order
-    Blocks are "popped" from the stack
+    Blocks are "popped" from the queue
     """
     def __init__(self, grid, *args, **kwargs):
         self.grid = grid
-        self.fill_random()
+        self.fill()
     def __str__(self):
         tmp = ""
         for b in self:
             tmp += b.__class__.__name__ + ","
         return tmp
-    def fill_random(self):
+    def fill(self):
         tmp = copy.deepcopy(blocks)
         random.shuffle(tmp)
         for b in tmp:
             self.append(b(grid = self.grid))
     def pop(self):
+        """
+        Pop a block from the stack
+        Automatically draw new block to screen
+        :return: Block
+        """
         if len(self) <= 2:
-            self.fill_random()
-        return super().pop(0)
+            self.fill()
+        next = super().pop(0)
+        self.screen.next(next)
+        return next
 
 
 def start(init_stdscr=None, **kwargs):
