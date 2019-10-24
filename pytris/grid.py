@@ -63,6 +63,7 @@ class Grid(list):
         Also redraw the grid to the screen
         :return: None
         """
+        raise Exception("This is now fully broken, needs fix for rows and columns")
         full = False
         for i, row in enumerate(self):
             if 0 not in row:
