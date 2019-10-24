@@ -21,14 +21,6 @@
 #SOFTWARE.
 
 import numpy as np
-import curses
-
-curses.use_default_colors()
-for i in range(0, curses.COLORS):
-    curses.init_pair(i, -1, i);
-"""
-
-"""
 
 class Block():
     """
@@ -57,9 +49,8 @@ class Block():
 
         """
 
-        self.grid = kwargs['grid']
         self.game = game
-        grid_y, grid_x = self.grid.gridsize
+        grid_y, grid_x = self.game.grid.gridsize
         insert_point = (0, grid_x // 2)
         self.mobile = True
 
@@ -84,11 +75,9 @@ class Block():
         for x, y in self.position():
             self.grid[x][y] = self.color
 
-    def move(self, move_func):
+    def move(move_func):
         """
         Decorator for movement functions
-        Movement methods return the appropriate move log to
-        revert the move
         Checks for collision, first check if bottom is hit.
         If block collided with the bottom of the grid or the
         top of a block, move the block to grid
@@ -98,20 +87,21 @@ class Block():
         :param move_func: A function that moves the block
         :return: Boolean signifying collision
         """
-        def wrapper():
+        def wrapper(self):
             if not self.mobile:
                 raise Exception("Block is not mobile but trying to move block")
-            move_log = move_func()
+            move_func(self)
             # First check if a collision has occurred
             if self.collision():
                 # If it has, revert the move
-                move_log.pop(-1)
+                self.anchor.pop(-1)
+                self.rotation.pop(-1)
                 # Check if the last move was downward
-                if move_func == self.down:
+                if move_func.__name__ == "down":
                     # If it was, it's a bottom collision
                     self.to_grid()
                     self.mobile = False
-                    return
+                    return False
             # Finally abstract away screen drawing
             self.game.screen.block()
         return wrapper
@@ -119,13 +109,15 @@ class Block():
     def collision(self):
         """
         Check if any block position intersects with a block on
-        the grid.
+        the grid or a wall
         :return: Boolean
         """
         for x, y in self.position():
-            if x == self.grid.grid_x:
+            if not 0 <= x < self.game.grid.grid_x:
                 return True
-            if self.grid[x][y] != 0:
+            if not 0 <= y < self.game.grid.grid_y:
+                return True
+            if self.game.grid[x][y] != 0:
                 return True
         return False
 
@@ -134,28 +126,28 @@ class Block():
         now = self.anchor[-1]
         next = tuple(np.add(now, (0, 1)))
         self.anchor.append(next)
-        return self.anchor
+        self.rotation.append(self.rotation[-1])
 
     @move
     def up(self):
         now = self.anchor[-1]
         next = tuple(np.subtract(now, (0, 1)))
         self.anchor.append(next)
-        return self.anchor
+        self.rotation.append(self.rotation[-1])
 
     @move
     def left(self):
         now = self.anchor[-1]
         next = tuple(np.subtract(now, (1, 0)))
         self.anchor.append(next)
-        return self.anchor
+        self.rotation.append(self.rotation[-1])
 
     @move
     def right(self):
         now = self.anchor[-1]
         next = tuple(np.add(now, (1, 0)))
         self.anchor.append(next)
-        return self.anchor
+        self.rotation.append(self.rotation[-1])
 
     @move
     def clockwise(self):
@@ -164,7 +156,7 @@ class Block():
             tmp = self.rotation[-1] + 1
             tmp %= len(self.states) - 1
         self.rotation.append(tmp)
-        return self.anchor
+        self.anchor.append(self.anchor[-1])
 
     @move
     def countercw(self):
@@ -174,10 +166,18 @@ class Block():
             if tmp < 0:
                 tmp = len(self.states) - 1
         self.rotation.append(tmp)
-        return self.anchor
+        self.anchor.append(self.anchor[-1])
 
-
-
+"""
+0: black
+1: red
+2: green
+3: yellow
+4: blue
+5: magenta
+6: cyan
+7: white
+"""
 
 class I(Block):
     def __init__(self, *args, **kwargs):
@@ -201,7 +201,7 @@ class I(Block):
                 (-2,0),(-1,0),(0,0),(1,0)
             ]
         ]
-        self.mark = 1
+        self.color = 1
         super().__init__(*args, **kwargs)
 
 class T(Block):
@@ -226,7 +226,7 @@ class T(Block):
                          (0,-1)
             ]
         ]
-        self.mark = 2
+        self.color = 2
         super().__init__(*args, **kwargs)
 
 class O(Block):
@@ -237,7 +237,7 @@ class O(Block):
                 (-1,-1), (0,-1)
             ]
         ]
-        self.mark = 3
+        self.color = 3
         super().__init__(*args, **kwargs)
 
 class L(Block):
@@ -262,7 +262,7 @@ class L(Block):
                 (-1, 0), (0, 0), (1, 0),
             ]
         ]
-        self.mark = 4
+        self.color = 4
         super().__init__(*args, **kwargs)
 
 class J(Block):
@@ -287,7 +287,7 @@ class J(Block):
                                  (1,-1)
             ]
         ]
-        self.mark = 5
+        self.color = 5
         super().__init__(*args, **kwargs)
 
 class S(Block):
@@ -303,7 +303,7 @@ class S(Block):
                         (1,-1)
             ]
         ]
-        self.mark = 6
+        self.color = 6
         super().__init__(*args, **kwargs)
 
 class Z(Block):
@@ -319,7 +319,7 @@ class Z(Block):
                 (0,-1)
             ]
         ]
-        self.mark = 7
+        self.color = 7
         super().__init__(*args, **kwargs)
 
 blocks = [I,T,O,L,J,S,Z]
