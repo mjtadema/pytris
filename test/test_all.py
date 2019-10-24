@@ -35,38 +35,39 @@ def test_block(game):
     4
     ...
     """
-    block = game.queue.pop()
-    from pytris.block import Block
-    assert isinstance(block, Block)
-    # Down
-    now = block.position()
-    block.down()
-    next = block.position()
-    for (ax, ay), (bx, by) in zip(now, next):
-        assert by == ay + 1
-    # Up
-    now = block.position()
-    block.up()
-    next = block.position()
-    for (ax, ay), (bx, by) in zip(now, next):
-        assert by == ay - 1
-    # Left
-    now = block.position()
-    block.left()
-    next = block.position()
-    for (ax, ay), (bx, by) in zip(now, next):
-        assert bx == ax - 1
-    # Right
-    now = block.position()
-    block.right()
-    next = block.position()
-    for (ax, ay), (bx, by) in zip(now, next):
-        assert bx == ax + 1
-    # Clockwise
-    for _ in range(6):
-        block.clockwise()
-    assert 0 < block.rotation[-1] < len(block.states)
-    # Countercw
-    for _ in range(6):
-        block.countercw()
-    assert 0 < block.rotation[-1] < len(block.states)
+    for _ in range(7):
+        block = game.queue.pop()
+        from pytris.block import Block
+        assert isinstance(block, Block)
+        # Down
+        now = block.position()
+        block.down()
+        next = block.position()
+        for (ax, ay), (bx, by) in zip(now, next):
+            assert by == ay + 1
+        # Up
+        now = block.position()
+        block.up()
+        next = block.position()
+        for (ax, ay), (bx, by) in zip(now, next):
+            assert by == ay - 1
+        # Left
+        now = block.position()
+        block.left()
+        next = block.position()
+        for (ax, ay), (bx, by) in zip(now, next):
+            assert bx == ax - 1
+        # Right
+        now = block.position()
+        block.right()
+        next = block.position()
+        for (ax, ay), (bx, by) in zip(now, next):
+            assert bx == ax + 1
+        # Clockwise
+        for _ in range(6):
+            block.clockwise()
+        assert 0 <= block.rotation[-1] < len(block.states)
+        # Countercw
+        for _ in range(6):
+            block.countercw()
+        assert 0 <= block.rotation[-1] < len(block.states)
