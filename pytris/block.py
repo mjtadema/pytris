@@ -86,13 +86,18 @@ class Block():
         self.anchor.append(next)
 
     def clockwise(self):
-        tmp = self.rotation[-1] + 1
-        self.rotation.append(tmp % len(self.states))
+        tmp = 0
+        if len(self.states) > 1:
+            tmp = self.rotation[-1] + 1
+            tmp %= len(self.states) - 1
+        self.rotation.append(tmp)
 
     def countercw(self):
-        tmp = self.rotation[-1] - 1
-        if tmp < 0:
-            tmp = len(self.states) - tmp
+        tmp = 0
+        if len(self.states) > 1:
+            tmp = self.rotation[-1] - 1
+            if tmp < 0:
+                tmp = len(self.states) - 1
         self.rotation.append(tmp)
 
 class I(Block):
