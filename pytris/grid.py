@@ -51,8 +51,9 @@ class Grid(list):
         self.game = game
         self.grid_y, self.grid_x = self.game.gridsize # Should be removed
         self.height, self.width = self.game.gridsize
-        for row in range(self.height):
-            self.append([0 for col in range(self.width)])
+        # Doing it in that way so that the grid is accessed as grid[x][y]
+        for col in range(self.width):
+            self.append([0 for row in range(self.height)])
         pass
 
     def row_is_full(self):
@@ -72,5 +73,5 @@ class Grid(list):
             self.game.screen.grid()
 
     def block_to_grid(self):
-        for y, x in self.game.block:
-            self[y][x] = self.game.block.color
+        for x, y in self.game.block.position():
+            self[x][y] = self.game.block.color
