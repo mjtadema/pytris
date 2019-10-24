@@ -20,39 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-
-from . import utils as ut
-import random as r
 import numpy as np
-from .screen import screen_params
-
-#available_blocks = allowed_blocks = list(blocktypes.keys())
-#allowed_blocks = ['test']
-movements = {
-        'down' : (1,0),
-        'left' : (0,-1),
-        'right': (0,1)
-        }
-allowed_moves = list(movements.keys())
-rotations = {
-        'fw'   : True,
-        'rv'   : False
-        }
-allowed_rotations = list(rotations.keys())
-
-def pick(keys):
-    picked_key = keys[r.randint(0, len(keys)-1)]
-    return picked_key
-
-def pick_block():
-    global available_blocks
-    if not available_blocks:
-        available_blocks = list(blocktypes.keys())
-    ri = r.randint(0, len(available_blocks)-1)
-    picked = available_blocks.pop(ri)
-    return picked
-
-
 
 class Block():
     """
@@ -61,7 +29,7 @@ class Block():
     def __init__(self, *args, **kwargs):
         """
         Base block object
-            init()                  : Spawns new block of type "type" at "insert"
+            init()                  : Spawns new block
 
         Exposes following methods:
             clockwise()             : Rotate the block clockwise
@@ -74,11 +42,9 @@ class Block():
 
         And properties:
             anchor                  : tuple( y, x ) to define anchor point
-            mark                    : character to draw on the grid
-            definition              : Base definition (constant)
+            color                   : character to draw on the grid
+            states                  : list of rotational states
             rotation                : Current relative rotation to anchor
-
-        Also adds a __dict__ object which acts as a log for the anchor positions and the rotation
 
         """
 
@@ -87,142 +53,189 @@ class Block():
         insert_point = (0, grid_x // 2)
 
         # Initialize block definition
-        self.anchor     = insert_point
-        self.rotation   = self.definition
-
-        # Save previous coords/anchor
-        self.prev_anc       = self.anchor
-        self.prev_rot       = self.rotation
-        self.prev_move      = 'down'
-
-        # Initialize tuple to determine rotation direction
-        self.fw_rv      = (ut.switch_tuple, ut.invert_tuple)
+        self.anchor = [insert_point]
+        self.rotation = [0]
 
     def __str__(self):
-        #grid = np.zeros((14, 10)) # This is now broken
-        #for y, x in self.position():
-        #    grid[y][x] = self.mark
         return self.__class__.__name__
-    __repr__ = __str__
-    def __iter__(self):
-        return(iter(self.position()))
 
-    def position(self, anchor=None, rotation=None):
-        if not anchor:
-            anchor = self.anchor
-        if not rotation:
-            rotation = self.rotation
-        return ut.add_tuples(anchor, rotation)
-
-    def update(func):
-        def out_func(self, *args):
-            self.prev_anc = self.anchor
-            self.prev_rot = self.rotation
-            func(self, *args)
-        return out_func
-
-    @update
-    def rotate(self, rot_key):
+    def position(self):
         """
-        Rotates the block forwards or reverse
-        input: bool
+        returns: an array of coordinates
         """
-        self.rotation = [ tuple([x, -y]) for y, x in self.rotation ] 
-        self.fw_rv = ut.switch_tuple(self.fw_rv)
-        self.prev_move = rot_key
+        return np.add(self.anchor[-1], self.states[self.rotation[-1]])
 
+    def down(self):
+        now = self.anchor[-1]
+        next = tuple(np.add(now, (0, 1)))
+        self.anchor.append(next)
 
-    @update
-    def move(self, move):
-        """
-        Moves the block anchor by "move" translation
-        input: tuple( y, x )
-        """
-        if move == 'random':
-            move = pick(allowed_moves)
-        move_tup = movements[move]
-        self.anchor = ut.add_tuples(self.anchor, move_tup)
-        self.prev_move = move
+    def up(self):
+        now = self.anchor[-1]
+        next = tuple(np.subtract(now, (0, 1)))
+        self.anchor.append(next)
 
-    def revert(self):
-        if self.prev_move == 'rv' or self.prev_move == 'fw':
-            # Then it was a rotation
-            self.rotation = self.prev_rot
-            self.fw_rv = ut.switch_tuple(self.fw_rv)
-        # Else it was a translation
-        self.anchor = self.prev_anc
+    def left(self):
+        now = self.anchor[-1]
+        next = tuple(np.subtract(now, (1, 0)))
+        self.anchor.append(next)
+
+    def right(self):
+        now = self.anchor[-1]
+        next = tuple(np.add(now, (1, 0)))
+        self.anchor.append(next)
+
+    def clockwise(self):
+        tmp = self.rotation[-1] + 1
+        self.rotation.append(tmp % len(self.states))
+
+    def countercw(self):
+        tmp = self.rotation[-1] - 1
+        if tmp < 0:
+            tmp = len(self.states) - tmp
+        self.rotation.append(tmp)
 
 class I(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (0,0), (-1,0), (-2,0), (1,0) ]
+        self.states = [
+            [
+                                (0, 2),
+                                (0, 1),
+                                (0, 0),
+                                (0,-1)
+            ],
+            [
+                        (-1,0),(0,0),(1,0),(2,0)
+            ],
+            [
+                                (0,1),
+                                (0,0),
+                                (0,-1),
+                                (0,-2)
+            ],
+            [
+                (-2,0),(-1,0),(0,0),(1,0)
+            ]
+        ]
         self.mark = 1
         super().__init__(*args, **kwargs)
 
 class T(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (-1,0), (0,-1), (0,0), (0,1) ]
+        self.states = [
+            [
+                (0,-1), (0, 0), (0, 1),
+                        (-1,0)
+            ],
+            [
+                         (0, 1),
+                (-1, 0), (0, 0),
+                         (0,-1)
+            ],
+            [
+                         (1, 0),
+                (0, -1), (0, 0), (0, 1),
+            ],
+            [
+                         (0, 1),
+                         (0, 0), (1, 0),
+                         (0,-1)
+            ]
+        ]
         self.mark = 2
         super().__init__(*args, **kwargs)
 
 class O(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (0,0), (-1,0), (0,-1), (-1,-1) ]
+        self.states = [
+            [
+                (-1, 0), (0, 0),
+                (-1,-1), (0,-1)
+            ]
+        ]
         self.mark = 3
         super().__init__(*args, **kwargs)
-    def rotate(self):
-        """
-        Overload rotate method because O block doesn't rotate
-        :return: None
-        """
-        pass
 
 class L(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (0,0), (-1,0), (1,0), (1,1) ]
+        self.states = [
+            [
+                (0, 1),
+                (0, 0),
+                (0,-1), (1,-1)
+            ],
+            [
+                (-1,0),(0,0),(1,0),
+                (-1,-1)
+            ],
+            [
+                (-1, 1), (0, 1),
+                         (0, 0),
+                         (0,-1)
+            ],
+            [
+                                 (1, 1),
+                (-1, 0), (0, 0), (1, 0),
+            ]
+        ]
         self.mark = 4
         super().__init__(*args, **kwargs)
 
 class J(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (0,0), (-1,0), (1,0), (1,-1) ]
+        self.states = [
+            [
+                        (0, 1),
+                        (0, 0),
+                (-1,1), (0,-1)
+            ],
+            [
+                (-1, 1),
+                (-1, 0), (0, 0), (1, 0),
+            ],
+            [
+                        (0, 1), (1, 1),
+                        (0, 0),
+                        (0,-1)
+            ],
+            [
+                (-1, 0), (0, 0), (1, 0),
+                                 (1,-1)
+            ]
+        ]
         self.mark = 5
         super().__init__(*args, **kwargs)
 
 class S(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (0,0), (0,1), (1,1), (-1,0) ]
+        self.states = [
+            [
+                        (0, 1), (1, 1),
+                (-1,0), (0, 0)
+            ],
+            [
+                (0, 1),
+                (0, 0), (1, 0),
+                        (1,-1)
+            ]
+        ]
         self.mark = 6
         super().__init__(*args, **kwargs)
 
 class Z(Block):
     def __init__(self, *args, **kwargs):
-        self.definition = [ (0,0), (1,0), (1,1), (0,-1) ]
+        self.states = [
+            [
+                (-1,1), (0, 1),
+                        (0, 0), (1, 0)
+            ],
+            [
+                        (1, 1),
+                (0, 0), (1, 0),
+                (0,-1)
+            ]
+        ]
         self.mark = 7
         super().__init__(*args, **kwargs)
 
 blocks = [I,T,O,L,J,S,Z]
-
-
-blocktypes = {
-        'line'  :{
-            'coords': [ (0,0), (-1,0), (-2,0), (1,0) ], 
-            'mark'  : 1 },
-        't'     :{
-            'coords': [ (-1,0), (0,-1), (0,0), (0,1) ],
-            'mark': 2 },
-        'square'  :{
-            'coords': [ (0,0), (-1,0), (0,-1), (-1,-1) ], 
-            'mark'  : 3 },
-        'l'  :{
-            'coords': [ (0,0), (-1,0), (1,0), (1,1) ], 
-            'mark'  : 4 },
-        'rev_l'  :{
-            'coords': [ (0,0), (-1,0), (1,0), (1,-1) ], 
-            'mark'  : 5 },
-        'squig'  :{
-            'coords': [ (0,0), (0,1), (1,1), (-1,0) ], 
-            'mark'  : 6 },
-        'rev_squig'  :{
-            'coords': [ (0,0), (1,0), (1,1), (0,-1) ], 
-            'mark'  : 7 }
-        }
