@@ -50,7 +50,7 @@ class Block():
         """
 
         self.game = game
-        grid_y, grid_x = self.game.grid.gridsize
+        grid_y, grid_x = self.game.gridsize
         insert_point = (3, grid_x // 2)
         self.mobile = True
 
@@ -66,14 +66,6 @@ class Block():
         returns: an array of coordinates
         """
         return np.add(self.anchor[-1], self.states[self.rotation[-1]])
-
-    def to_grid(self):
-        """
-        Moves the block to grid when it has reached the bottom
-        :return: None
-        """
-        for x, y in self.position():
-            self.grid[x][y] = self.color
 
     def move(move_func):
         """
