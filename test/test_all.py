@@ -25,7 +25,7 @@ def test_queue(game):
             assert len(game.queue) == 8
         assert isinstance(game.queue.pop(), Block)
 
-from pytris.block import Block
+
 class TestBlock():
     """
     Tests block functionality
@@ -38,6 +38,7 @@ class TestBlock():
     ...
     """
     def test_block(self, game):
+        from pytris.block import Block
         for _ in range(7):
             block = game.queue.pop()
             assert isinstance(block, Block)
@@ -124,9 +125,26 @@ class TestGrid:
         bottom_row = game.grid.grid_y - 1
         width = game.grid.width
         for i in range(width):
-            game.grid[bottom_row][i] = 1
+            game.grid[i][bottom_row] = 1
         game.grid.row_is_full()
-        assert np.sum(game.grid[bottom_row]) == 0
+        assert np.sum(game.grid[i][bottom_row] for i in game.grid.width) == 0
 
-    def test_grid_collision(self, game):
-        pass
+    def test_block_to_grid(self, game):
+        pos = game.block.position()
+        game.grid.block_to_grid()
+        for x, y in pos:
+            assert game.grid[x][y] != 0
+
+    def test_grid_fill(self, game):
+        for _ in range(3):
+            block = game.queue.pop()
+            for _ in range(40):
+                if not block.down():
+                    break
+        height = game.grid.height
+        start = height - 1
+        stop = height - 6
+        step = -1
+        # This should at least put something in the last 5 rows..
+        for row in range(start, stop, step):
+            assert np.sum(game.grid[row]) != 0
