@@ -103,3 +103,30 @@ class TestBlock():
             block.right()
         for x, y in block.position():
             assert 0 <= x < block.game.grid.grid_x
+
+    def test_bottom(self, game):
+        # Test collision with bottom of grid
+        block = game.queue.pop()
+        for _ in range(40):
+            if not block.down():
+                break # collision
+        for x, y in block.position():
+            assert 0 <= y < block.game.grid.grid_y
+
+
+import numpy as np
+class TestGrid:
+    """
+    Grid needs to be able to clear rows and to properly accept new blocks.
+    Blocks should handle collisions with old blocks as well
+    """
+    def test_full_row(self, game):
+        bottom_row = game.grid.grid_y - 1
+        width = game.grid.width
+        for i in range(width):
+            game.grid[bottom_row][i] = 1
+        game.grid.row_is_full()
+        assert np.sum(game.grid[bottom_row]) == 0
+
+    def test_grid_collision(self, game):
+        pass
