@@ -59,22 +59,30 @@ class Game():
         """
         # Move arguments to attributes
         self.gridsize = gridsize
+        self.debug = False
+        if "debug" in kwargs.keys():
+            self.debug = True
 
         # Start audio
-        if self.args.audio:
-            self.p_audio = start_audio()
+        try:
+            if kwargs['audio']:
+                self.p_audio = start_audio()
+        except KeyError:
+            pass
+
+        # Initialize screen
+        self.screen = Screen(self, **kwargs)
 
         # Initialze grid
         self.grid = Grid(gridsize)
 
         # Initialize block queue
-        self.queue = Queue(self.grid)
+        self.queue = Queue(self)
 
         # Initialize first block
         self.block = self.queue.pop()
 
-        # Initialize screen
-        self.screen = Screen(game, **kwargs)
+
 
         # Initialize some values
         self.gameover = False
@@ -112,7 +120,7 @@ class Game():
                     # Move the block down every "tick"
                     if self.tick():
                         if not self.block.down():
-                            # Means a collision as occurred
+                            # Means a collision has occurred
                             break
 
                     # Try to get a command every cycle
@@ -182,8 +190,8 @@ class Queue(list):
     When the bag is depleted, it is again filled with blocks in random order
     Blocks are "popped" from the queue
     """
-    def __init__(self, grid, *args, **kwargs):
-        self.grid = grid
+    def __init__(self, game, *args, **kwargs):
+        self.game = game
         self.fill()
     def __str__(self):
         tmp = ""
@@ -194,8 +202,8 @@ class Queue(list):
         tmp = copy.deepcopy(blocks)
         random.shuffle(tmp)
         for b in tmp:
-            self.append(b(grid = self.grid))
-    def pop(self):
+            self.append(b(game = self.game))
+    def pop(self, i = 0):
         """
         Pop a block from the stack
         Automatically draw new block to screen
@@ -203,9 +211,9 @@ class Queue(list):
         """
         if len(self) <= 2:
             self.fill()
-        next = super().pop(0)
-        self.screen.next(next)
-        return next
+        n = super().pop(i)
+        self.game.screen.next(n)
+        return n
 
 
 def start(init_stdscr=None, **kwargs):
