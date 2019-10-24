@@ -145,7 +145,7 @@ def start_audio(self):
     pass
 
 
-class Queue():
+class Queue(list):
     """
     The queue contains 1 copy of each block
     When the bag is depleted, it is again filled with blocks in random order
@@ -153,22 +153,21 @@ class Queue():
     """
     def __init__(self, grid, *args, **kwargs):
         self.grid = grid
-        self.stack = []
         self.fill_random()
     def __str__(self):
         tmp = ""
-        for b in self.stack:
+        for b in self:
             tmp += b.__class__.__name__ + ","
         return tmp
     def fill_random(self):
         tmp = copy.deepcopy(blocks)
         random.shuffle(tmp)
         for b in tmp:
-            self.stack.append(b(grid = self.grid))
+            self.append(b(grid = self.grid))
     def pop(self):
-        if len(self.stack) <= 2:
+        if len(self) <= 2:
             self.fill_random()
-        return self.stack.pop(0)
+        return super().pop(0)
 
 
 def start(init_stdscr=None, **kwargs):
