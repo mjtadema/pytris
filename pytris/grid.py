@@ -29,20 +29,16 @@ import time
 from functools import partial
 import curses
 
-class Grid():
+class Grid(list):
     """
     Grid now keeps track of the underlying grid of immobile blocks
 
     """
 
-    def __init__(self, gridsize):
+    def __init__(self, game):
         """
-        Main object for keeping track of the game
 
         Provides the following methods:
-            start()         : Initializes the game and starts the main loop
-            end()           : End the game and close it
-            collision()     : Checks if there is a collision
             full_row()      : Deals with full rows
 
         Contains the following properties:
@@ -51,86 +47,30 @@ class Grid():
             block           : current moving Block object
 
         """
-        # Initialize game
-        self.gridsize = gridsize
-        self.grid_y, self.grid_x = gridsize
-        self.grid                   = np.zeros((gridsize), dtype=np.int64)
+        # Initialize grid
+        self.game = game
+        self.grid_y, self.grid_x = self.game.gridsize # Should be removed
+        self.height, self.width = self.game.gridsize
+        for row in range(self.height):
+            self.append([0 for col in range(self.width)])
+        pass
 
-    # Some methods to take advantage of numpy arrays
-    def __str__(self):
-        #if self.block:
-        #    grid_copy = copy.deepcopy(self.grid)
-        #    return str(copy_to_grid(grid_copy, self.block))
-        #else:
-        return str(self.grid)
-    __repr__ = __str__
-    def __getitem__(self, index):
-        return self.grid[index]
-    def __iter__(self):
-        return iter(self.grid)
-    def __len__(self):
-        return len(self.grid)
-
-    def spawn(self, next_block):
-        self.block = next_block
-
-    def at_edge(self):
-        for y, x in self.block.position():
-            if x == self.grid_x or x < 0:
-                self.block.revert()
-                return True
-        return False
-
-    def at_bottom(self):
-        for y, x in self.block.position():
-            if y == self.grid_y:
-                self.block.revert()
-                return True
-        return False
-
-    def at_block(self):
-        for y, x in self.block.position():
-            if self.grid[y][x] != 0:
-                if self.block.prev_move == 'down':
-                    self.block.revert()
-                    return True
-                else:
-                    self.block.revert()
-                    return False
-        return False
-
-    def at_top(self):
-        for y, x in self.block:
-            if y <= 3:
-                return True
-        return False
-
-    def collision(self):
+    def row_is_full(self):
         """
-        Returns true if collision is "fatal"
-        Else deals with it and returns false
+        Checks if a row is full (doesn't contain a 0 anymore)
+        If so, pop the row and insert a new row at the bottom of the list
+        Also redraw the grid to the screen
+        :return: None
         """
-        if self.at_bottom():
-            return True 
-        elif self.at_edge():
-            return False
-        elif self.at_block():
-            if self.at_top():
-                self.game_over = True
-            return True
-        return False
+        full = False
+        for i, row in enumerate(self):
+            if 0 not in row:
+                full = True
+                self.pop(i)
+                self.insert(0, [0 for col in range(self.width)])
+        if full:
+            self.game.screen.grid()
 
-    def full_row(self):
-        row_full = 0
-        # Handle full row
-        for y, row in enumerate(self.grid):
-            if row.all() != 0:
-                row_full += 1
-                # Delete the full row, insert a blank row up top
-                self.grid = np.delete(self.grid, y, axis=0)
-                self.grid = np.insert(self.grid, 0, np.zeros((1,self.grid_x)), axis=0)
-        return row_full
-
-    def put(self):
-        for y, x in self.block:
-            self.grid[y][x] = self.block.mark
+    def block_to_grid(self):
+        for y, x in self.game.block:
+            self[y][x] = self.game.block.color
