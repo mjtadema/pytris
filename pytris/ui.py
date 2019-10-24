@@ -12,18 +12,17 @@ screen_params = {
 class Screen():
     """
     Screen acts as an abstraction to curses
+    It displays output but also records input
     """
 
-    def __init__(self, gridsize, screen, *args, **kwargs):
-        self.gridsize = gridsize
-        self.grid_y, self.grid_x = self.gridsize
+    def __init__(self, game, screen, *args, **kwargs):
+        self.game = game
+        self.grid_y, self.grid_x = self.game.gridsize
         self.screen = screen
         self.border()
         curses.curs_set(0)
         self.screen.nodelay(True)
-        curses.use_default_colors()
-        for i in range(0, curses.COLORS):
-            curses.init_pair(i, -1, i);
+
 
     def addstr(self, *args, **kwargs):
         self.screen.addstr(*args, **kwargs)
@@ -31,19 +30,40 @@ class Screen():
     def refresh(self, *args, **kwargs):
         self.screen.refresh(*args, **kwargs)
 
+    def block(self):
+        """
+        Draw a mobile block to the screen
+        Only draw if block is beyond the buffer zone..
+        :return:
+        """
+        pass
+
+    def next(self):
+        """
+        Draw next block to screen in appropriate area
+        :return: None
+        """
+        pass
+
+    def data(self):
+        """
+        Draw data to appropriate places
+        :return: None
+        """
+        pass
+
     def border(self):
         """
         Print the border at initialization
         """
-        top = "+----------+"
-        bottom = "+----------+"
-        side = "|          |"
-        self.addstr(0, 0, top)
+        horizontal = "+----------+"
+        vertical   = "|          |"
+        self.addstr(0, 0, horizontal)
         border_height = self.grid_y - screen_params['buff']
         for y in range(border_height):
             Y = y+1
-            self.addstr(Y, 0, side)
-        self.addstr(border_height+1, 0, bottom)
+            self.addstr(Y, 0, vertical)
+        self.addstr(border_height+1, 0, horizontal)
         self.screen.refresh()
     
     def print(self, *message):
@@ -55,8 +75,9 @@ class Screen():
         self.screen.addstr(y_print, x_print, " ".join(message))
         self.screen.refresh()
 
-    def overlay(self, grid):
+    def grid(self, grid):
         """
-        Draw a sparse matrix over the current grid
+        Draw a matrix over the current grid
+        Then draw the mobile block again because that's the easiest
         """
         pass
