@@ -68,25 +68,14 @@ class Game():
         self.queue = Queue(self.grid)
 
         # Initialize screen
-        #self.screen = Screen(gridsize, kwargs['screen'])
+        if not kwargs['debug']:
+            self.screen = Screen(gridsize, kwargs['screen'])
 
         # Initialize some values
         self.score = 0
         self.speed = 1.0
         self.factor = 0.6
         self.level = 1
-
-
-
-    def test(self):
-        #self.screen.print("Hello world!")
-        print("test")
-        print(self.queue)
-        print(self.grid)
-        for _ in range(7):
-            print(self.queue.pop())
-            print(self.queue)
-
 
     def start(self):
         """
