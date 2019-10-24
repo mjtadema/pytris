@@ -97,9 +97,9 @@ class TestBlock():
         for _ in range(10):
             block.left()
         for x, y in block.position():
-            assert 0 < x < block.game.grid.grid_x
+            assert 0 <= x < block.game.grid.grid_x
         block = game.queue.pop()
         for _ in range(10):
             block.right()
         for x, y in block.position():
-            assert 0 < x < block.game.grid.grid_x
+            assert 0 <= x < block.game.grid.grid_x
