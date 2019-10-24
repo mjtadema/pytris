@@ -91,11 +91,12 @@ class Block():
                 # Check if the last move was downward
                 if move_func.__name__ == "down":
                     # If it was, it's a bottom collision
-                    self.to_grid()
+                    self.game.grid.block_to_grid()
                     self.mobile = False
                     return False
             # Finally abstract away screen drawing
             self.game.screen.block()
+            return True
         return wrapper
 
     def collision(self):
@@ -105,9 +106,9 @@ class Block():
         :return: Boolean
         """
         for x, y in self.position():
-            if not 0 <= x < self.game.grid.grid_x:
+            if not 0 <= x < self.game.grid.width:
                 return True
-            if not 0 <= y < self.game.grid.grid_y:
+            if not 0 <= y < self.game.grid.height:
                 return True
             if self.game.grid[x][y] != 0:
                 return True
