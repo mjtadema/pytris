@@ -91,7 +91,7 @@ class Block():
                 # Check if the last move was downward
                 if move_func.__name__ == "down":
                     # If it was, it's a bottom collision
-                    self.game.grid.block_to_grid()
+                    self.to_grid()
                     self.mobile = False
                     return False
             # Finally abstract away screen drawing
@@ -113,6 +113,10 @@ class Block():
             if self.game.grid[x][y] != 0:
                 return True
         return False
+
+
+    def to_grid(self):
+        self.game.grid.set(self.color, self.position())
 
     @move
     def down(self):

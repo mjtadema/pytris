@@ -121,17 +121,24 @@ class TestGrid:
     Grid needs to be able to clear rows and to properly accept new blocks.
     Blocks should handle collisions with old blocks as well
     """
+    def test_grid(self, game):
+        """
+        Print the grid just to test that it looks okay
+        """
+        assert len(game.grid) == game.grid.width # first dimension should be x/width
+        col = [ game.grid[0][i] for i in range(game.grid.height) ]
+        assert len(col) == game.grid.height # Second dimension should be y/height
+
     def test_full_row(self, game):
-        bottom_row = game.grid.grid_y - 1
-        width = game.grid.width
-        for i in range(width):
-            game.grid[i][bottom_row] = 1
+        bottom_row = game.grid.height - 1
+        for j in range(game.grid.width):
+            game.grid[j][bottom_row] = 1
         game.grid.row_is_full()
-        assert np.sum(game.grid[i][bottom_row] for i in game.grid.width) == 0
+        assert np.sum([game.grid[j][bottom_row] for j in range(game.grid.width)]) == 0
 
     def test_block_to_grid(self, game):
         pos = game.block.position()
-        game.grid.block_to_grid()
+        game.block.to_grid()
         for x, y in pos:
             assert game.grid[x][y] != 0
 
@@ -147,4 +154,5 @@ class TestGrid:
         step = -1
         # This should at least put something in the last 5 rows..
         for row in range(start, stop, step):
-            assert np.sum(game.grid[row]) != 0
+            assert np.sum([game.grid[j][row] for j in range(game.grid.width)]) != 0
+

@@ -54,7 +54,6 @@ class Grid(list):
         # Doing it in that way so that the grid is accessed as grid[x][y]
         for col in range(self.width):
             self.append([0 for row in range(self.height)])
-        pass
 
     def row_is_full(self):
         """
@@ -62,17 +61,38 @@ class Grid(list):
         If so, pop the row and insert a new row at the bottom of the list
         Also redraw the grid to the screen
         :return: None
+
+                  columns x
+                  0 1 2 3 4 5 ...
+         rows y 0 [ [ [ [ [ [
+                1
+                2         a
+                3
+                4
+                5 [ [ [ [ [ [
+                ...
+
+            a = grid[4][2]
+            for i in width:
+                grid[i].pop(2)
+                grid[i].insert(0, 0)
+
         """
-        raise Exception("This is now fully broken, needs fix for rows and columns")
         full = False
-        for i, row in enumerate(self):
+        # Grid is defined as x by y
+        # Iterate over rows
+        for i in range(self.height):
+            row = [ self[j][i] for j in range(self.width)]
             if 0 not in row:
                 full = True
-                self.pop(i)
-                self.insert(0, [0 for col in range(self.width)])
+                for j in range(self.width):
+                    # Pop the full row
+                    self[j].pop(i)
+                    # Insert a new row at the top
+                    self[j].insert(0, 0)
         if full:
             self.game.screen.grid()
 
-    def block_to_grid(self):
-        for x, y in self.game.block.position():
-            self[x][y] = self.game.block.color
+    def set(self, value, iterable):
+        for x, y in iterable:
+            self[x][y] = value
