@@ -21,6 +21,7 @@
 #SOFTWARE.
 
 import numpy as np
+import random
 
 class Block():
     """
@@ -51,12 +52,14 @@ class Block():
 
         self.game = game
         grid_y, grid_x = self.game.gridsize
-        insert_point = (self.game.grid.width // 2, 3)
+        insert_point = (self.game.grid.width // 2, 10)
         self.mobile = True
 
         # Initialize block definition
         self.anchor = [insert_point]
         self.rotation = [0]
+
+
 
     def __str__(self):
         return self.__class__.__name__
@@ -96,17 +99,30 @@ class Block():
                     # If the block was at the top of the screen, trigger game over
                     self.game.gameover = self.is_gameover()
                     return False
-            # Finally abstract away screen drawing
-            self.game.screen.block()
+                else:
+                    # Finally abstract away screen drawing
+                    self.game.screen.grid()
             return True
         return wrapper
+
+    def random_move(self):
+        # Init all moves, used for picking a random move
+        self.moves = [
+            self.down,
+            self.left,
+            self.right,
+            self.clockwise,
+            self.countercw
+        ]
+        picked_move = self.moves[random.randint(0, len(self.moves) - 1)]
+        return picked_move()
 
     def is_gameover(self):
         """
         Test whether an y coord is above the buffer zone
         """
         for x, y in self.position():
-            if y < self.game.grid.height - self.game.grid.buffer:
+            if y <= self.game.grid.buffer:
                 return True
         return False
 
@@ -136,12 +152,15 @@ class Block():
         self.anchor.append(next)
         self.rotation.append(self.rotation[-1])
 
-    @move
-    def up(self):
-        now = self.anchor[-1]
-        next = tuple(np.subtract(now, (0, 1)))
-        self.anchor.append(next)
-        self.rotation.append(self.rotation[-1])
+    """
+    Obviously the blocks cannot possibly move up..
+    """
+    #@move
+    #def up(self):
+    #    now = self.anchor[-1]
+    #    next = tuple(np.subtract(now, (0, 1)))
+    #    self.anchor.append(next)
+    #    self.rotation.append(self.rotation[-1])
 
     @move
     def left(self):

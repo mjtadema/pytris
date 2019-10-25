@@ -22,13 +22,12 @@
 
 
 from .grid import Grid 
-from .ui import Screen
+from .screen import Screen
 import curses
 import time
 from .block import blocks
 from multiprocessing import Process
 from pathlib import Path
-from .utils import parse_args
 import copy
 import random
 
@@ -52,16 +51,14 @@ class Game():
         queue   : queue of next blocks
         screen  : abstraction to curses
     """
-    def __init__(self, *args, gridsize = (20, 10), **kwargs):
+    def __init__(self, *args, gridsize = (20, 10), debug = False, screen = None, **kwargs):
         """ 
         Initialize game state
 
         """
         # Move arguments to attributes
         self.gridsize = gridsize
-        self.debug = False
-        if "debug" in kwargs.keys():
-            self.debug = True
+        self.debug = debug
 
         # Start audio
         try:
@@ -71,9 +68,9 @@ class Game():
             pass
 
         # Initialize screen
-        self.screen = Screen(self, **kwargs)
+        self.screen = Screen(self, screen)
 
-        # Initialze grid
+        # Initialize grid
         self.grid = Grid(self)
 
         # Initialize block queue
@@ -82,15 +79,29 @@ class Game():
         # Initialize first block
         self.block = self.queue.pop()
 
-
-
         # Initialize some values
         self.gameover = False
         self.score = 0
-        self.speed = 1.0
+        if self.debug:
+            # When debugging just put maximum speed
+            self.speed = 0.0
+        else:
+            self.speed = 1.0
         self.factor = 0.6
         self.level = 1
         self.t = 0
+        self.username = "test"
+        self.highscore = 1000
+
+        self.screen.print("Initialized game")
+
+    def add_score(self, score_to_add):
+        """
+        Adds the score to the current score in game
+        """
+        self.score += score_to_add
+        # Refresh the data on screen
+        self.screen.data()
 
     def tick(self):
         """
@@ -107,39 +118,44 @@ class Game():
         """
         The main game loop
         """
+
         try:
             while not self.gameover:
 
                 if not self.block.mobile:
                     # Pop a new block from queue
                     self.block = self.queue.pop()
+                    self.screen.print("Popped a block")
 
                 # Keep track of game ticks
                 # speed basically determines the time a tick takes
-                while True:
+                while self.block.mobile:
                     # Move the block down every "tick"
                     if self.tick():
                         if not self.block.down():
-                            # Means a collision has occurred
                             break
+                        self.screen.print("Moved down")
+                        if self.debug:
+                            # If debugging do a random move
+                            self.block.random_move()
 
                     # Try to get a command every cycle
-                    try:
-                        self.screen.command()
-                    except (curses.error, KeyError):
-                        # Ignore curses errors
-                        pass
+                    if not self.debug:
+                        try:
+                            # Get a command from curses
+                            self.screen.command()
+                        except (curses.error, KeyError):
+                            # Ignore curses errors
+                            pass
 
                     # Limit CPU cycles, IMPORTANT
-                    time.sleep(0.01)
+                    # When debugging or testing, DON'T sleep but go asap
+                    if not self.debug:
+                        time.sleep(1)
 
                 # After every collision:
                 # Check if there is a full row in the grid
-                self.grid.full_row()
-
-                # At every 20 points, increment level and speed
-                self.check_score()
-
+                self.grid.row_is_full()
 
         except KeyboardInterrupt as e:
             if p_audio:
@@ -193,11 +209,7 @@ class Queue(list):
     def __init__(self, game, *args, **kwargs):
         self.game = game
         self.fill()
-    def __str__(self):
-        tmp = ""
-        for b in self:
-            tmp += b.__class__.__name__ + ","
-        return tmp
+
     def fill(self):
         tmp = copy.deepcopy(blocks)
         random.shuffle(tmp)
@@ -211,9 +223,14 @@ class Queue(list):
         """
         if len(self) <= 2:
             self.fill()
-        n = super().pop(i)
-        self.game.screen.next(n)
-        return n
+        self.game.screen.next()
+        return super().pop(i)
+
+    def next(self):
+        """
+        Return the next block in the queue
+        """
+        return self[-1]
 
 
 def start(init_stdscr=None, **kwargs):

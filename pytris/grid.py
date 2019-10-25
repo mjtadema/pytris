@@ -79,7 +79,7 @@ class Grid(list):
                 grid[i].insert(0, 0)
 
         """
-        full = False
+        full = 0
         # Grid is defined as x by y
         # Iterate over rows
         for i in range(self.height):
@@ -91,7 +91,9 @@ class Grid(list):
                     self[j].pop(i)
                     # Insert a new row at the top
                     self[j].insert(0, 0)
-        if full:
+        if full > 0:
+            self.game.add_score(full)
+            # Refresh the grid on the screen
             self.game.screen.grid()
 
     def set(self, value, iterable):

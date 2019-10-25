@@ -48,14 +48,17 @@ class TestBlock():
         next = block.position()
         for (ax, ay), (bx, by) in zip(now, next):
             assert by == ay + 1
-    def test_up(self, game):
-        # Up
-        block = game.queue.pop()
-        now = block.position()
-        block.up()
-        next = block.position()
-        for (ax, ay), (bx, by) in zip(now, next):
-            assert by == ay - 1
+    """
+    Blocks cannot move up..
+    """
+    #def test_up(self, game):
+    #    # Up
+    #    block = game.queue.pop()
+    #    now = block.position()
+    #    block.up()
+    #    next = block.position()
+    #    for (ax, ay), (bx, by) in zip(now, next):
+    #        assert by == ay - 1
 
     def test_left(self, game):
         # Left
@@ -132,6 +135,8 @@ class TestGrid:
             game.grid[j][bottom_row] = 1
         game.grid.row_is_full()
         assert np.sum([game.grid[j][bottom_row] for j in range(game.grid.width)]) == 0
+        # Test if the score is properly incremented
+        assert game.score == 1
 
     def test_block_to_grid(self, game):
         pos = game.block.position()
@@ -171,34 +176,44 @@ class TestGrid:
         assert row_sum != 0
 
 class TestGame():
+
     def test_simulate_game(self, game):
         """
-        Now simulate a game with random moves and make sure nothing breaks and all that
+        Now simulate some games with random moves and make sure nothing breaks and all that
         """
+        for _ in range(20):
+            self.simulate_game(game)
+
+    def simulate_game(self, game):
         import random
         cycles = 0
         while not game.gameover:
             block = game.queue.pop()
-            moves = [
-                block.down,
-                block.left,
-                block.right,
-                block.clockwise,
-                block.countercw
-            ]
             while True:
                 if not block.down():
                     break
-                random_move = moves[random.randint(0, len(moves) - 1)]
-                if not random_move():
+                if not block.random_move():
                     break # Upon collision
                 cycles += 1
-                if cycles > 100000:
+                if cycles > 1000:
                     raise Exception("Infinite loop")
 
         # Also assert that the buffer rows aren't empty
         row_sum = 0
-        for i in range(4):
+        for i in range(game.grid.buffer + 1):
             row = [game.grid[j][i] for j in range(game.grid.width)]
             row_sum += np.sum(row)
         assert row_sum != 0
+
+    def test_start_game(self,game):
+        game.start()
+
+class TestScreen():
+    """
+    Screen can be tested by using the frame buffer,
+    then trusting that drawing it will actually succeed
+    """
+    def test_commands(self, game):
+        pass
+    def test_frame_buffer(self, game):
+        pass
