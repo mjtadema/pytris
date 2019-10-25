@@ -51,7 +51,7 @@ class Block():
 
         self.game = game
         grid_y, grid_x = self.game.gridsize
-        insert_point = (3, grid_x // 2)
+        insert_point = (self.game.grid.width // 2, 3)
         self.mobile = True
 
         # Initialize block definition
@@ -93,11 +93,22 @@ class Block():
                     # If it was, it's a bottom collision
                     self.to_grid()
                     self.mobile = False
+                    # If the block was at the top of the screen, trigger game over
+                    self.game.gameover = self.is_gameover()
                     return False
             # Finally abstract away screen drawing
             self.game.screen.block()
             return True
         return wrapper
+
+    def is_gameover(self):
+        """
+        Test whether an y coord is above the buffer zone
+        """
+        for x, y in self.position():
+            if y < self.game.grid.height - self.game.grid.buffer:
+                return True
+        return False
 
     def collision(self):
         """

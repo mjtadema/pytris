@@ -51,6 +51,7 @@ class Grid(list):
         self.game = game
         self.grid_y, self.grid_x = self.game.gridsize # Should be removed
         self.height, self.width = self.game.gridsize
+        self.buffer = 4
         # Doing it in that way so that the grid is accessed as grid[x][y]
         for col in range(self.width):
             self.append([0 for row in range(self.height)])

@@ -5,9 +5,6 @@ def game():
     from pytris.game import Game
     return Game(debug = True)
 
-def test_game(game):
-    assert game
-
 def test_queue(game):
     """
     The queue object initializes all blocks (7) once
@@ -156,3 +153,52 @@ class TestGrid:
         for row in range(start, stop, step):
             assert np.sum([game.grid[j][row] for j in range(game.grid.width)]) != 0
 
+    def test_game_over(self, game):
+        # Now test for game over condition
+        while not game.gameover:
+            for _ in range(10):
+                block = game.queue.pop()
+                for _ in range(40):
+                    if not block.down():
+                        break
+        assert game.gameover
+
+        # Also assert that the buffer rows aren't empty
+        row_sum = 0
+        for i in range(4):
+            row = [game.grid[j][i] for j in range(game.grid.width)]
+            row_sum += np.sum(row)
+        assert row_sum != 0
+
+class TestGame():
+    def test_simulate_game(self, game):
+        """
+        Now simulate a game with random moves and make sure nothing breaks and all that
+        """
+        import random
+        cycles = 0
+        while not game.gameover:
+            block = game.queue.pop()
+            moves = [
+                block.down,
+                block.left,
+                block.right,
+                block.clockwise,
+                block.countercw
+            ]
+            while True:
+                if not block.down():
+                    break
+                random_move = moves[random.randint(0, len(moves) - 1)]
+                if not random_move():
+                    break # Upon collision
+                cycles += 1
+                if cycles > 100000:
+                    raise Exception("Infinite loop")
+
+        # Also assert that the buffer rows aren't empty
+        row_sum = 0
+        for i in range(4):
+            row = [game.grid[j][i] for j in range(game.grid.width)]
+            row_sum += np.sum(row)
+        assert row_sum != 0
