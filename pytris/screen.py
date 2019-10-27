@@ -1,14 +1,5 @@
 import curses
 
-"""
-Define some parameters for the screen to use later
-"""
-screen_params = {
-    "buff": 4, # Horizontal grid lines to not draw
-    "y_off": 1, # y offset relative to grid
-    "x_off": 1, # x offset relative to grid
-}
-
 class Screen():
     """
     Screen acts as an abstraction to curses
@@ -43,14 +34,6 @@ class Screen():
     20 | 0 0 0 0 0 0 0 0 0 0  |
     21 + - - - - - - - - - -  +
 
-
-
-
-
-
-
-
-
     Your application can determine the size of the screen by using the
     curses.LINES and curses.COLS variables to obtain the y and x sizes.
     Legal coordinates will then extend from (0,0) to (curses.LINES - 1, curses.COLS - 1)
@@ -58,11 +41,13 @@ class Screen():
     """
 
     def __init__(self, game, screen = None):
+        # Initialize some attributes
         self.game = game
         self.screen = screen
+        # Draw static information to the screen
         self.static()
         self.print_count = 0
-
+        # Only do this stuff if there is a screen
         if self.screen:
             curses.use_default_colors()
             for i in range(0, curses.COLORS):
@@ -70,9 +55,11 @@ class Screen():
                 curses.init_pair(i, -1, i)
             curses.curs_set(0)
             self.screen.nodelay(True)
+        # TODO BIG! test for screen size and if possible force screen size
 
     """
-    Some wrappers to the screen attribute
+    Some wrappers to the screen
+    They are skipped when there is no screen (for testing)
     """
     def addstr(self, y, x, s, color = 0):
         if not self.screen:
@@ -90,6 +77,7 @@ class Screen():
     def pixel(self, x, y, color, y0 = 1, x0 = 1):
         """
         Method that draws a pixel to the grid
+        Accepts coordinates as (x, y), abstracts away lame curses convention of using (y,x)
         """
         #if y < 0 or color == 0:
         #    return False
@@ -104,6 +92,7 @@ class Screen():
     def keytest(self):
         """
         prints a key string to the screen
+        for testing
         """
         import time
         self.print("Testing keys")
@@ -124,8 +113,8 @@ class Screen():
         right
         clockwise
         counter clockwise
-        pause
-        exit
+        TODO pause
+        TODO exit
         :return: a function to execute
         """
         if not self.screen:
@@ -162,6 +151,12 @@ class Screen():
                 self.pixel(x, y, self.game.block.color)
         # Finally refresh the screen
         self.refresh()
+
+    def ghost(self):
+        """
+        TODO draw a ghost block on the bottom of the grid
+        basically simulate falling and draw the final position
+        """
 
     def next(self):
         """
@@ -331,4 +326,5 @@ class Screen():
         """
         Deal with the endgame condition
         """
+        # TODO Write something for an endgame screen
         pass
