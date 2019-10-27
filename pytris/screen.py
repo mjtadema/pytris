@@ -1,3 +1,4 @@
+import sys
 import curses
 
 class Screen():
@@ -44,8 +45,13 @@ class Screen():
         # Initialize some attributes
         self.game = game
         self.screen = screen
+        # Deal with a screen that is too small
+        #self.resize()
         # Draw static information to the screen
-        self.static()
+        try:
+            self.static()
+        except curses.error:
+            raise Exception("Screen is too small!")
         self.print_count = 0
         # Only do this stuff if there is a screen
         if self.screen:
@@ -64,7 +70,10 @@ class Screen():
     def addstr(self, y, x, s, color = 0):
         if not self.screen:
             return
-        self.screen.addstr(y, x, str(s), curses.color_pair(color))
+        try:
+            self.screen.addstr(y, x, str(s), curses.color_pair(color))
+        except curses.error:
+            pass
     def getkey(self, *args, **kwargs):
         if not self.screen:
             return
@@ -88,6 +97,16 @@ class Screen():
             " ",
             color
         )
+
+    def resize(self):
+        """
+        Force a screen redraw when resizing
+        """
+        self.static()
+        self.data()
+        self.grid()
+        self.block()
+        self.next()
 
     def keytest(self):
         """
@@ -124,11 +143,14 @@ class Screen():
             "KEY_LEFT": self.game.block.left,
             "KEY_RIGHT": self.game.block.right,
             "KEY_UP": self.game.block.clockwise,
-            "KEY_DOWN": self.game.block.countercw
+            "KEY_DOWN": self.game.block.countercw,
+            "x": exit,
+            "p": self.game.pause,
+            "KEY_RESIZE": self.resize
         }
         try:
             return commands[self.getkey()]()
-        except curses.error:
+        except (curses.error, KeyError):
             pass
         return None
 
