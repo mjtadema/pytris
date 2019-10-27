@@ -2,6 +2,9 @@ import pytest
 
 @pytest.fixture
 def game():
+    """
+    Initialize a game object with "debug" flag set
+    """
     from pytris.game import Game
     return Game(debug = True)
 
@@ -21,7 +24,6 @@ def test_queue(game):
             assert isinstance(game.queue.pop(), Block)
             assert len(game.queue) == 8
         assert isinstance(game.queue.pop(), Block)
-
 
 class TestBlock():
     """
@@ -48,17 +50,6 @@ class TestBlock():
         next = block.position()
         for (ax, ay), (bx, by) in zip(now, next):
             assert by == ay + 1
-    """
-    Blocks cannot move up..
-    """
-    #def test_up(self, game):
-    #    # Up
-    #    block = game.queue.pop()
-    #    now = block.position()
-    #    block.up()
-    #    next = block.position()
-    #    for (ax, ay), (bx, by) in zip(now, next):
-    #        assert by == ay - 1
 
     def test_left(self, game):
         # Left
@@ -113,7 +104,6 @@ class TestBlock():
                 break # collision
         for x, y in block.position():
             assert 0 <= y < block.game.grid.height
-
 
 import numpy as np
 class TestGrid:
@@ -207,10 +197,3 @@ class TestGame():
 
     def test_start_game(self,game):
         game.start()
-
-class TestScreen():
-    """
-    Screen methods can be tested but have to be visually verified
-    """
-    def test_commands(self, game):
-        pass
