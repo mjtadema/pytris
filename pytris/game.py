@@ -52,7 +52,6 @@ class Game():
 
         # Initialize screen
         self.screen = Screen(self, screen)
-        self.screen.print("Debugging: " + str(self.debug))
 
         # Initialize grid
         self.grid = Grid(self)
@@ -104,10 +103,15 @@ class Game():
         Toggle pause the game
         """
         self.block.mobile = not self.block.mobile
-        self.paused = not self.paused
+        if not self.paused:
+            self.paused = True
+            # Also print paused message
+            self.screen.print("PAUSED")
+        else:
+            self.paused = False
+            self.screen.print("")
         # Also reset tick time
         self.t = time.time()
-
 
     def add_score(self, score_to_add):
         """
