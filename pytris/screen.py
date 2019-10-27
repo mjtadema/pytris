@@ -231,9 +231,9 @@ class Screen():
         """
         Print all the static elements of the ui
 
-           0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+           0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
         0  + - - - - - - - - - -  +
-        1  |                      |     S  C  O  R  E  :
+        1  |                      |     S  C  O  R  E  :              controls
         2  |                      |     L  E  V  E  L  :
         3  |                      |
         4  |                      |     H  I  G  H  S  C  O  R  E  :
@@ -284,6 +284,16 @@ class Screen():
         self.addstr(2, 13, "LEVEL:")
         self.addstr(4, 13, "HIGHSCORE:")
         self.addstr(11, 13, "NEXT:")
+
+        # Print controls
+        controls = """CONTROLS:
+movement: left, right, space
+rotation: up, down
+pause   : p
+exit    : x"""
+        for i, line in enumerate(controls.split("\n")):
+            i += 15 # start
+            self.addstr(i, 25, line)
 
         # Finally refresh the screen
         self.refresh()
