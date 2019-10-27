@@ -20,39 +20,18 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-
-import numpy as np
-from . import block
-from . import utils as ut
-import copy
-import time
-from functools import partial
-import curses
-
 class Grid(list):
     """
     Grid now keeps track of the underlying grid of immobile blocks
-
     """
 
     def __init__(self, game):
-        """
-
-        Provides the following methods:
-            full_row()      : Deals with full rows
-
-        Contains the following properties:
-            grid_main       : numpy array, size (grid_y, grid_x), contains main grid of non-moving squares
-            grid_moving     : numpy array, size (grid_y, grid_x), contains grid of moving squares
-            block           : current moving Block object
-
-        """
         # Initialize grid
         self.game = game
         self.gridsize = (10, 40)
         self.top_buffer = 20 # Following tetris guidlines
         self.width, self.height = self.gridsize
-        # Doing it in that way so that the grid is accessed as grid[x][y]
+        # Doing it in this way so that the grid is accessed as grid[x][y]
         for col in range(self.width):
             self.append([0 for row in range(self.height)])
 
