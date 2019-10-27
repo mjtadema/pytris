@@ -22,7 +22,6 @@ setuptools.setup(
             "Operating System :: OS Independent",
             ],
         install_requires=[
-            'simpleaudio',
             'numpy'
             ],
         python_requires='>=3',
