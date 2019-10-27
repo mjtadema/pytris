@@ -21,27 +21,35 @@ class Screen():
 
        0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
     0  + - - - - - - - - - -  +
-    1  |                      |  S  C  O  R  E  :  int
-    2  |                      |  L  E  V  E  L  :  int
-    3  |                      |
-    4  |                      |  H  I  G  H  S  C  O  R  E  :
-    5  |                      |  str
-    6  |                      |  int
-    7  |                      |
-    8  |                      |  print statement
-    9  |                      |
-    10 |                      |
-    11 |                      |  N  E  X  T  :
-    12 |                      |
-    13 |                      |  +  -  -  -  -  +
-    14 |                      |  |              |
-    15 |                      |  |              |
-    16 |                      |  |              |
-    17 |                      |  |              |
-    18 |                      |  +  -  -  -  -  +
-    19 |                      |
-    20 |                      |
+    1  | 0 0 0 0 0 0 0 0 0 0  |  S  C  O  R  E  :  int
+    2  | 0 0 0 0 0 0 0 0 0 0  |  L  E  V  E  L  :  int
+    3  | 0 0 0 0 0 0 0 0 0 0  |
+    4  | 0 0 0 0 0 0 0 0 0 0  |  H  I  G  H  S  C  O  R  E  :
+    5  | 0 0 0 0 0 0 0 0 0 0  |  str
+    6  | 0 0 0 0 0 0 0 0 0 0  |  int
+    7  | 0 0 0 0 0 0 0 0 0 0  |
+    8  | 0 0 0 0 0 0 0 0 0 0  |
+    9  | 0 0 0 0 0 0 0 0 0 0  |
+    10 | 0 0 0 0 0 0 0 0 0 0  |
+    11 | 0 0 0 0 0 0 0 0 0 0  |  N  E  X  T  :
+    12 | 0 0 0 0 0 0 0 0 0 0  |
+    13 | 0 0 0 0 0 0 0 0 0 0  |  +  -  -  -  -  +
+    14 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
+    15 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
+    16 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
+    17 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
+    18 | 0 0 0 0 0 0 0 0 0 0  |  +  -  -  -  -  +
+    19 | 0 0 0 0 0 0 0 0 0 0  |
+    20 | 0 0 0 0 0 0 0 0 0 0  |
     21 + - - - - - - - - - -  +
+
+
+
+
+
+
+
+
 
     Your application can determine the size of the screen by using the
     curses.LINES and curses.COLS variables to obtain the y and x sizes.
@@ -55,96 +63,41 @@ class Screen():
         self.static()
         self.print_count = 0
 
-        # Initialize empty frame buffer
-        self.frame_buffer = self.blank_frame()
-
         if self.screen:
             curses.use_default_colors()
             for i in range(0, curses.COLORS):
+                # Initialize all the color pairs
                 curses.init_pair(i, -1, i)
             curses.curs_set(0)
             self.screen.nodelay(True)
 
-    @staticmethod
-    def blank_frame():
-        frame = [[] for _ in range(22)]
-        for col in frame:
-            col = [" " for _ in range(22)]
-        return
-
-    def build_frame(self):
-        """
-        Writes all the screen elements to the frame buffer layer by layer
-        """
-        self.static()
-        self.data()
-        self.next()
-        self.grid()
-
-    def flush(self):
-        """
-        Write the frame buffer row by row to curses and refresh the screen
-        """
-        for y in range(22):
-            row = [self.frame_buffer[x][y] for x in range(22)]
-            row = "".join(row)
-            self.
-
-
-        self.frame_buffer = self.blank_frame()
-
-    # TODO this code should be moved to addstr
-    def curses(curses_func):
-        """
-        Decorator for functions dealing with a curses screen
-        If in debugging mode, curses is not initialized so these functions would fail
-        This decorator simply passes those functions if in debug mode
-        :return: None
-        """
-        def wrapper(self, *args, **kwargs):
-
-            func_return = curses_func(*args, **kwargs)
-            self.screen.refresh()
-            return func_return
-        return wrapper
-
     """
     Some wrappers to the screen attribute
     """
-    def addstr(self, *args, **kwargs):
+    def addstr(self, y, x, s, color = 0):
         if not self.screen:
             return
-        self.screen.addstr(*args, **kwargs)
+        self.screen.addstr(y, x, str(s), curses.color_pair(color))
     def getkey(self, *args, **kwargs):
         if not self.screen:
             return
         return self.screen.getkey(*args, **kwargs)
-    def block_color(self, color):
-        if not self.screen:
-            return
-        return curses.color_pair(color)
     def refresh(self, *args, **kwargs):
         if not self.screen:
             return
         self.screen.refresh(*args, **kwargs)
 
-
-    def pixel(self, x, y, color):
+    def pixel(self, x, y, color, y0 = 1, x0 = 1):
         """
         Method that draws a pixel to the grid
-        0 is ignored as well as pixels above the buffer
         """
-        border_width = 1
-        y_offset = 1
-        x_offset = 1
-        y -= self.game.grid.buffer
-        if y < 0 or color == 0:
-            return False
+        #if y < 0 or color == 0:
+        #    return False
 
         self.addstr(
-            y + y_offset + border_width,
-            x + x_offset + border_width,
-            color,
+            y + y0,
+            x + x0,
+            " ",
             color
         )
 
@@ -173,19 +126,22 @@ class Screen():
         counter clockwise
         pause
         exit
-        :return: Bool for success status
+        :return: a function to execute
         """
+        if not self.screen:
+            return
         commands = {
-            " ": self.game.block.down(),
-            "KEY_LEFT": self.game.block.left(),
-            "KEY_RIGHT": self.game.block.right(),
-            "KEY_UP": self.game.block.clockwise(),
-            "KEY_DOWN": self.game.block.countercw()
+            " ": self.game.block.down,
+            "KEY_LEFT": self.game.block.left,
+            "KEY_RIGHT": self.game.block.right,
+            "KEY_UP": self.game.block.clockwise,
+            "KEY_DOWN": self.game.block.countercw
         }
         try:
-            commands[self.getkey()]
+            return commands[self.getkey()]()
         except curses.error:
             pass
+        return None
 
     def block(self):
         """
@@ -193,37 +149,98 @@ class Screen():
         Only draw if block is beyond the buffer zone..
         :return:
         """
+        # First blank the previous position
+        for x, y in self.game.block.last():
+            y -= self.game.grid.top_buffer
+            if y >= 0:
+                self.pixel(x, y, 0)
+        # Then draw the new position
         for x, y in self.game.block.position():
-            self.pixel(y, x, self.game.block.color)
+            y -= self.game.grid.top_buffer
+            #self.print("y new: " + str(y))
+            if y >= 0:
+                self.pixel(x, y, self.game.block.color)
+        # Finally refresh the screen
+        self.refresh()
 
     def next(self):
         """
         Draw next block pixels
+
+        next(): Prints the next block in the corresponding field
+
+           12 13 14 15 16 17
+        13 +  -  -  -  -  +
+        14 |  0  0  0  0  |
+        15 |  0  0  0  0  |
+        16 |  0  0  0  0  |
+        17 |  0  0  0  0  |
+        18 +  -  -  -  -  +
+
         :return: None
         """
-        y_off, x_off = (14, 13)
+        # Blank the next box
+        for y in range(14, 18):
+            self.addstr(y, 13, " " * 4)
+        # Get the next block in the queue
         next = self.game.queue.next()
-        for x, y in next.position():
-            self.addstr(
-                y + y_off,
-                x + x_off,
-                " ",
-                next.color
-            )
+        for x, y in next.position(anchor = (2,1)):
+            self.pixel(x, y, next.color, y0 = 14, x0 = 13)
+        # Finally refresh the screen
+        self.refresh()
 
     def data(self):
         """
         Draw data to appropriate places
+
+        data(): print data like score, level, highscore etc
+
+           0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
+        0
+        1                                              int
+        2                                              int
+        3
+        4
+        5                            str
+        6                            int
+
         :return: None
         """
         self.addstr(1, 18, str(self.game.score))
         self.addstr(2, 18, str(self.game.level))
         self.addstr(5, 12, str(self.game.username))
         self.addstr(6, 12, str(self.game.highscore))
+        # finally refresh
+        self.refresh()
 
     def static(self):
         """
         Print all the static elements of the ui
+
+           0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+        0  + - - - - - - - - - -  +
+        1  |                      |  S  C  O  R  E  :
+        2  |                      |  L  E  V  E  L  :
+        3  |                      |
+        4  |                      |  H  I  G  H  S  C  O  R  E  :
+        5  |                      |
+        6  |                      |
+        7  |                      |
+        8  |                      |
+        9  |                      |
+        10 |                      |
+        11 |                      |  N  E  X  T  :
+        12 |                      |
+        13 |                      |  +  -  -  -  -  +
+        14 |                      |  |              |
+        15 |                      |  |              |
+        16 |                      |  |              |
+        17 |                      |  |              |
+        18 |                      |  +  -  -  -  -  +
+        19 |                      |
+        20 |                      |
+        21 + - - - - - - - - - -  +
+
         TODO: maybe not hardcode the width and height? though it would never change..
         """
         horizontal = "-"
@@ -254,36 +271,61 @@ class Screen():
         self.addstr(4, 12, "HIGHSCORE:")
         self.addstr(11, 12, "NEXT:")
 
+        # Finally refresh the screen
         self.refresh()
 
     def print(self, *message):
         """
         print a message in the appropriate place
         """
-        self.screen.addstr(8, 12, " " * 12)
-        self.screen.addstr(8, 12, str(self.print_count)+" "+" ".join(message))
+        self.addstr(8, 12, " " * 20)
+        self.addstr(8, 12, str(self.print_count)+" "+" ".join(message))
         self.print_count += 1
-        self.screen.refresh()
+        self.refresh()
 
     def grid(self):
         """
         Draw a matrix over the current grid
-        Then draw the mobile block again because that's the easiest
-        """
-        self.print("Drawing grid..")
-        self.blank_grid()
-        for x, col in enumerate(self.game.grid):
-            for y, color in enumerate(col):
-                self.pixel(x, y, color)
-        self.print("Drawing block")
-        self.block()
+        Pixel by pixel (because different colors..)
+        Then draw the mobile block
 
-    def blank_grid(self):
+           0 1 2 3 4 5 6 7 8 9 10 11
+        0  + - - - - - - - - - -  +
+        1  | 0 0 0 0 0 0 0 0 0 0  |
+        2  | 0 0 0 0 0 0 0 0 0 0  |
+        3  | 0 0 0 0 0 0 0 0 0 0  |
+        4  | 0 0 0 0 0 0 0 0 0 0  |
+        5  | 0 0 0 0 0 0 0 0 0 0  |
+        6  | 0 0 0 0 0 0 0 0 0 0  |
+        7  | 0 0 0 0 0 0 0 0 0 0  |
+        8  | 0 0 0 0 0 0 0 0 0 0  |
+        9  | 0 0 0 0 0 0 0 0 0 0  |
+        10 | 0 0 0 0 0 0 0 0 0 0  |
+        11 | 0 0 0 0 0 0 0 0 0 0  |
+        12 | 0 0 0 0 0 0 0 0 0 0  |
+        13 | 0 0 0 0 0 0 0 0 0 0  |
+        14 | 0 0 0 0 0 0 0 0 0 0  |
+        15 | 0 0 0 0 0 0 0 0 0 0  |
+        16 | 0 0 0 0 0 0 0 0 0 0  |
+        17 | 0 0 0 0 0 0 0 0 0 0  |
+        18 | 0 0 0 0 0 0 0 0 0 0  |
+        19 | 0 0 0 0 0 0 0 0 0 0  |
+        20 | 0 0 0 0 0 0 0 0 0 0  |
+        21 + - - - - - - - - - -  +
+
         """
-        Blank the grid to prepare for a freshly drawn screen
-        """
-        for y in range(2, 2 + 1 + 20):
-            self.addstr(y, 2, " " * 20)
+        # Blank the grid
+        for y in range(1, 21):
+            self.addstr(y, 1, " " * 10)
+        # Draw the new grid
+        for x, column in enumerate(self.game.grid):
+            for y, color in enumerate(column):
+                y -= self.game.grid.top_buffer
+                if y >= 0:
+                    self.pixel(x, y, color)
+
+        # Finally refresh the screen
+        self.refresh()
 
     def endgame(self):
         """
