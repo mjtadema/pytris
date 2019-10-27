@@ -1,7 +1,7 @@
 # PyTris
 Proof of concept tetris game in python using curses!
 
-![Screenshot](/screenshots/Screenshot_20190525_190350.png?raw=true "PyTris in action")
+![Screenshot](/screenshots/Screenshot_20191027_190011.png?raw=true "PyTris in action")
 
 # Install
 install by running `pip install --user git+https://github.com/mjtadema/pytris.git`
