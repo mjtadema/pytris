@@ -49,9 +49,9 @@ class Grid(list):
         """
         # Initialize grid
         self.game = game
-        self.grid_y, self.grid_x = self.game.gridsize # Should be removed
-        self.height, self.width = self.game.gridsize
-        self.buffer = 4
+        self.gridsize = (10, 40)
+        self.top_buffer = 20 # Following tetris guidlines
+        self.width, self.height = self.gridsize
         # Doing it in that way so that the grid is accessed as grid[x][y]
         for col in range(self.width):
             self.append([0 for row in range(self.height)])
@@ -97,5 +97,8 @@ class Grid(list):
             self.game.screen.grid()
 
     def set(self, value, iterable):
+        """
+        Set a value to a list of grid coordinates
+        """
         for x, y in iterable:
             self[x][y] = value
