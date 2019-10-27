@@ -98,12 +98,12 @@ class TestBlock():
         for _ in range(10):
             block.left()
         for x, y in block.position():
-            assert 0 <= x < block.game.grid.grid_x
+            assert 0 <= x < block.game.grid.width
         block = game.queue.pop()
         for _ in range(10):
             block.right()
         for x, y in block.position():
-            assert 0 <= x < block.game.grid.grid_x
+            assert 0 <= x < block.game.grid.width
 
     def test_bottom(self, game):
         # Test collision with bottom of grid
@@ -112,7 +112,7 @@ class TestBlock():
             if not block.down():
                 break # collision
         for x, y in block.position():
-            assert 0 <= y < block.game.grid.grid_y
+            assert 0 <= y < block.game.grid.height
 
 
 import numpy as np
@@ -170,7 +170,7 @@ class TestGrid:
 
         # Also assert that the buffer rows aren't empty
         row_sum = 0
-        for i in range(4):
+        for i in range(game.grid.top_buffer + 1):
             row = [game.grid[j][i] for j in range(game.grid.width)]
             row_sum += np.sum(row)
         assert row_sum != 0
@@ -200,7 +200,7 @@ class TestGame():
 
         # Also assert that the buffer rows aren't empty
         row_sum = 0
-        for i in range(game.grid.buffer + 1):
+        for i in range(game.grid.top_buffer + 1):
             row = [game.grid[j][i] for j in range(game.grid.width)]
             row_sum += np.sum(row)
         assert row_sum != 0
@@ -210,10 +210,7 @@ class TestGame():
 
 class TestScreen():
     """
-    Screen can be tested by using the frame buffer,
-    then trusting that drawing it will actually succeed
+    Screen methods can be tested but have to be visually verified
     """
     def test_commands(self, game):
-        pass
-    def test_frame_buffer(self, game):
         pass
