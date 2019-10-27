@@ -51,8 +51,7 @@ class Block():
         """
 
         self.game = game
-        grid_y, grid_x = self.game.gridsize
-        insert_point = (self.game.grid.width // 2, 10)
+        insert_point = (self.game.grid.width // 2, self.game.grid.top_buffer - 2)
         self.mobile = True
 
         # Initialize block definition
@@ -64,11 +63,24 @@ class Block():
     def __str__(self):
         return self.__class__.__name__
 
-    def position(self):
+    def position(self, anchor = None):
         """
+        Optional: set a custom anchor
         returns: an array of coordinates
         """
-        return np.add(self.anchor[-1], self.states[self.rotation[-1]])
+        if anchor == None:
+            anchor = self.anchor[-1]
+        return np.add(anchor, self.states[self.rotation[-1]])
+
+    def last(self):
+        """
+        Get the previous position, used for blanking old block position
+        only if len of anchor and rotation >= 2..
+        """
+        try:
+            return np.add(self.anchor[-2], self.states[self.rotation[-2]])
+        except IndexError:
+            return self.position() # Should be fine...
 
     def move(move_func):
         """
@@ -84,8 +96,10 @@ class Block():
         """
         def wrapper(self):
             if not self.mobile:
-                raise Exception("Block is not mobile but trying to move block")
+                # Block is not mobile but trying to move block
+                return False
             move_func(self)
+            self.game.screen.print("Moved "+move_func.__name__)
             # First check if a collision has occurred
             if self.collision():
                 # If it has, revert the move
@@ -98,10 +112,10 @@ class Block():
                     self.mobile = False
                     # If the block was at the top of the screen, trigger game over
                     self.game.gameover = self.is_gameover()
+                    self.game.screen.block()
                     return False
-                else:
-                    # Finally abstract away screen drawing
-                    self.game.screen.grid()
+
+            self.game.screen.block()
             return True
         return wrapper
 
@@ -122,7 +136,7 @@ class Block():
         Test whether an y coord is above the buffer zone
         """
         for x, y in self.position():
-            if y <= self.game.grid.buffer:
+            if y <= self.game.grid.top_buffer:
                 return True
         return False
 
@@ -181,7 +195,7 @@ class Block():
         tmp = 0
         if len(self.states) > 1:
             tmp = self.rotation[-1] + 1
-            tmp %= len(self.states) - 1
+            tmp = tmp % (len(self.states))
         self.rotation.append(tmp)
         self.anchor.append(self.anchor[-1])
 
@@ -235,17 +249,18 @@ class T(Block):
     def __init__(self, *args, **kwargs):
         self.states = [
             [
-                (0,-1), (0, 0), (0, 1),
-                        (-1,0)
+                         (0, 1),
+                (-1, 0), (0, 0), (1, 0),
             ],
+
             [
                          (0, 1),
                 (-1, 0), (0, 0),
                          (0,-1)
             ],
             [
-                         (1, 0),
-                (0, -1), (0, 0), (0, 1),
+                (-1, 0), (0, 0), (1, 0),
+                         (0, -1)
             ],
             [
                          (0, 1),
@@ -296,9 +311,9 @@ class J(Block):
     def __init__(self, *args, **kwargs):
         self.states = [
             [
-                        (0, 1),
-                        (0, 0),
-                (-1,1), (0,-1)
+                         (0, 1),
+                         (0, 0),
+                (-1,-1), (0,-1)
             ],
             [
                 (-1, 1),
