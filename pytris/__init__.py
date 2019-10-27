@@ -1,2 +1,1 @@
-from . import game
-from .pytris import wrap
+from .__main__ import wrap

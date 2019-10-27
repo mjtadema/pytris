@@ -20,117 +20,64 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+class Grid(list):
+    """
+    Grid now keeps track of the underlying grid of immobile blocks
+    """
 
-import numpy as np
-from . import block
-from . import utils as ut
-import copy
-import time
-from functools import partial
-import curses
+    def __init__(self, game):
+        # Initialize grid
+        self.game = game
+        self.gridsize = (10, 40)
+        self.top_buffer = 20 # Following tetris guidlines
+        self.width, self.height = self.gridsize
+        # Doing it in this way so that the grid is accessed as grid[x][y]
+        for col in range(self.width):
+            self.append([0 for row in range(self.height)])
 
-class Grid():
-
-    def __init__(self, gridsize):
+    def row_is_full(self):
         """
-        Main object for keeping track of the game
+        Checks if a row is full (doesn't contain a 0 anymore)
+        If so, pop the row and insert a new row at the bottom of the list
+        Also redraw the grid to the screen
+        :return: None
 
-        Provides the following methods:
-            start()         : Initializes the game and starts the main loop
-            end()           : End the game and close it
-            collision()     : Checks if there is a collision
-            full_row()      : Deals with full rows
+                  columns x
+                  0 1 2 3 4 5 ...
+         rows y 0 [ [ [ [ [ [
+                1
+                2         a
+                3
+                4
+                5 [ [ [ [ [ [
+                ...
 
-        Contains the following properties:
-            grid_main       : numpy array, size (grid_y, grid_x), contains main grid of non-moving squares
-            grid_moving     : numpy array, size (grid_y, grid_x), contains grid of moving squares
-            block           : current moving Block object
+            a = grid[4][2]
+            for i in width:
+                grid[i].pop(2)
+                grid[i].insert(0, 0)
 
         """
-        # Initialize game
-        from .game import gridsize, buff, grid_y, grid_x
+        full = 0
+        # Grid is defined as x by y
+        # Iterate over rows
+        for i in range(self.height):
+            row = [ self[j][i] for j in range(self.width)]
+            if 0 not in row:
+                full = True
+                for j in range(self.width):
+                    # Pop the full row
+                    self[j].pop(i)
+                    # Insert a new row at the top
+                    self[j].insert(0, 0)
+        if full > 0:
+            self.game.add_score(full)
+            # Refresh the grid on the screen
+            self.game.screen.grid()
 
-        self.grid_y, self.grid_x = gridsize
-        grid_buffer                 = grid_y+buff, grid_x
-        self.grid                   = np.zeros((gridsize), dtype=np.int64)
-        self.game_over              = False
-        self.block                  = ''
-
-    # Some methods to take advantage of numpy arrays
-    def __str__(self):
-        #if self.block:
-        #    grid_copy = copy.deepcopy(self.grid)
-        #    return str(copy_to_grid(grid_copy, self.block))
-        #else:
-        return str(self.grid)
-    __repr__ = __str__
-    def __getitem__(self, index):
-        return self.grid[index]
-    def __iter__(self):
-        return iter(self.grid)
-    def __len__(self):
-        return len(self.grid)
-
-    def spawn(self, next_block):
-        self.block = next_block
-
-    def at_edge(self):
-        for y, x in self.block.position():
-            if x == self.grid_x or x < 0:
-                self.block.revert()
-                return True
-        return False
-
-    def at_bottom(self):
-        for y, x in self.block.position():
-            if y == self.grid_y:
-                self.block.revert()
-                return True
-        return False
-
-    def at_block(self):
-        for y, x in self.block.position():
-            if self.grid[y][x] != 0:
-                if self.block.prev_move == 'down':
-                    self.block.revert()
-                    return True
-                else:
-                    self.block.revert()
-                    return False
-        return False
-
-    def at_top(self):
-        for y, x in self.block:
-            if y <= 3:
-                return True
-        return False
-
-    def collision(self):
+    def set(self, value, iterable):
         """
-        Returns true if collision is "fatal"
-        Else deals with it and returns false
+        Set a value to a list of grid coordinates
         """
-        if self.at_bottom():
-            return True 
-        elif self.at_edge():
-            return False
-        elif self.at_block():
-            if self.at_top():
-                self.game_over = True
-            return True
-        return False
-
-    def full_row(self):
-        row_full = 0
-        # Handle full row
-        for y, row in enumerate(self.grid):
-            if row.all() != 0:
-                row_full += 1
-                # Delete the full row, insert a blank row up top
-                self.grid = np.delete(self.grid, y, axis=0)
-                self.grid = np.insert(self.grid, 0, np.zeros((1,self.grid_x)), axis=0)
-        return row_full
-
-    def put(self):
-        for y, x in self.block:
-            self.grid[y][x] = self.block.mark
+        for x, y in iterable:
+            self[x][y] = value

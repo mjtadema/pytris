@@ -7,7 +7,7 @@ with open("README.md",'r') as f:
 
 setuptools.setup(
         name="pytris",
-        version="0.0.1",
+        version="0.1.0",
         author="Matthijs Tadema",
         author_email="M.J.Tadema@protonmail.com",
         description="A tetris game implemented in python",
