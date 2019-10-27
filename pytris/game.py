@@ -75,6 +75,7 @@ class Game():
         self.factor = 0.6
         self.level = 1
         self.t = 0
+        self.paused = False
 
         self.read_highscore()
         self.screen.data()
@@ -97,6 +98,16 @@ class Game():
                     f_high.write(str(self.score))
             except:
                 pass # Else just fuck it
+
+    def pause(self):
+        """
+        Toggle pause the game
+        """
+        self.block.mobile = not self.block.mobile
+        self.paused = not self.paused
+        # Also reset tick time
+        self.t = time.time()
+
 
     def add_score(self, score_to_add):
         """
@@ -144,6 +155,11 @@ class Game():
                         time.sleep(0.01)
                     else:
                         self.block.random_move()
+
+                # While paused, the block is not mobile so move commands are ignored
+                while self.paused:
+                    self.screen.command()
+                    continue # So that the block isn't immediately moved down
 
                 # After a tick passes, move the block down forcefully
                 self.block.down()
