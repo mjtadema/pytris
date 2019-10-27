@@ -17,11 +17,13 @@ def parse_args():
     parser.add_argument('--keytest', '-t', action='store_true', default=False)
     return parser.parse_args()
 
-if __name__ == "__main__":
+def wrap():
     import curses
     args = parse_args()
     kwargs = {}
     if args.keytest:
         kwargs['keytest'] = True
-
     curses.wrapper(main, **kwargs)
+
+if __name__ == "__main__":
+    wrap()
