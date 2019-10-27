@@ -99,7 +99,6 @@ class Block():
                 # Block is not mobile but trying to move block
                 return False
             move_func(self)
-            self.game.screen.print("Moved "+move_func.__name__)
             # First check if a collision has occurred
             if self.collision():
                 # If it has, revert the move
@@ -165,16 +164,6 @@ class Block():
         next = tuple(np.add(now, (0, 1)))
         self.anchor.append(next)
         self.rotation.append(self.rotation[-1])
-
-    """
-    Obviously the blocks cannot possibly move up..
-    """
-    #@move
-    #def up(self):
-    #    now = self.anchor[-1]
-    #    next = tuple(np.subtract(now, (0, 1)))
-    #    self.anchor.append(next)
-    #    self.rotation.append(self.rotation[-1])
 
     @move
     def left(self):

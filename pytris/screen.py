@@ -13,24 +13,24 @@ class Screen():
 
        0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
     0  + - - - - - - - - - -  +
-    1  | 0 0 0 0 0 0 0 0 0 0  |  S  C  O  R  E  :  int
-    2  | 0 0 0 0 0 0 0 0 0 0  |  L  E  V  E  L  :  int
+    1  | 0 0 0 0 0 0 0 0 0 0  |    S  C  O  R  E  :  int
+    2  | 0 0 0 0 0 0 0 0 0 0  |    L  E  V  E  L  :  int
     3  | 0 0 0 0 0 0 0 0 0 0  |
-    4  | 0 0 0 0 0 0 0 0 0 0  |  H  I  G  H  S  C  O  R  E  :
-    5  | 0 0 0 0 0 0 0 0 0 0  |  str
-    6  | 0 0 0 0 0 0 0 0 0 0  |  int
+    4  | 0 0 0 0 0 0 0 0 0 0  |    H  I  G  H  S  C  O  R  E  :
+    5  | 0 0 0 0 0 0 0 0 0 0  |    str
+    6  | 0 0 0 0 0 0 0 0 0 0  |    int
     7  | 0 0 0 0 0 0 0 0 0 0  |
     8  | 0 0 0 0 0 0 0 0 0 0  |
     9  | 0 0 0 0 0 0 0 0 0 0  |
     10 | 0 0 0 0 0 0 0 0 0 0  |
-    11 | 0 0 0 0 0 0 0 0 0 0  |  N  E  X  T  :
+    11 | 0 0 0 0 0 0 0 0 0 0  |    N  E  X  T  :
     12 | 0 0 0 0 0 0 0 0 0 0  |
-    13 | 0 0 0 0 0 0 0 0 0 0  |  +  -  -  -  -  +
-    14 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
-    15 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
-    16 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
-    17 | 0 0 0 0 0 0 0 0 0 0  |  |  0  0  0  0  |
-    18 | 0 0 0 0 0 0 0 0 0 0  |  +  -  -  -  -  +
+    13 | 0 0 0 0 0 0 0 0 0 0  |    +  -  -  -  -  +
+    14 | 0 0 0 0 0 0 0 0 0 0  |    |  0  0  0  0  |
+    15 | 0 0 0 0 0 0 0 0 0 0  |    |  0  0  0  0  |
+    16 | 0 0 0 0 0 0 0 0 0 0  |    |  0  0  0  0  |
+    17 | 0 0 0 0 0 0 0 0 0 0  |    |  0  0  0  0  |
+    18 | 0 0 0 0 0 0 0 0 0 0  |    +  -  -  -  -  +
     19 | 0 0 0 0 0 0 0 0 0 0  |
     20 | 0 0 0 0 0 0 0 0 0 0  |
     21 + - - - - - - - - - -  +
@@ -184,18 +184,18 @@ class Screen():
         next(): Prints the next block in the corresponding field
 
            12 13 14 15 16 17
-        13 +  -  -  -  -  +
-        14 |  0  0  0  0  |
-        15 |  0  0  0  0  |
-        16 |  0  0  0  0  |
-        17 |  0  0  0  0  |
-        18 +  -  -  -  -  +
+        13    +  -  -  -  -  +
+        14    |  0  0  0  0  |
+        15    |  0  0  0  0  |
+        16    |  0  0  0  0  |
+        17    |  0  0  0  0  |
+        18    +  -  -  -  -  +
 
         :return: None
         """
         # Blank the next box
         for y in range(14, 18):
-            self.addstr(y, 13, " " * 4)
+            self.addstr(y, 14, " " * 4)
         # Get the next block in the queue
         next = self.game.queue.next()
         for x, y in next.position(anchor = (2,1)):
@@ -220,10 +220,10 @@ class Screen():
 
         :return: None
         """
-        self.addstr(1, 18, str(self.game.score))
-        self.addstr(2, 18, str(self.game.level))
-        self.addstr(5, 12, str(self.game.username))
-        self.addstr(6, 12, str(self.game.highscore))
+        self.addstr(1, 19, str(self.game.score))
+        self.addstr(2, 19, str(self.game.level))
+        self.addstr(5, 13, str(self.game.username))
+        self.addstr(6, 13, str(self.game.highscore))
         # finally refresh
         self.refresh()
 
@@ -233,24 +233,24 @@ class Screen():
 
            0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
         0  + - - - - - - - - - -  +
-        1  |                      |  S  C  O  R  E  :
-        2  |                      |  L  E  V  E  L  :
+        1  |                      |     S  C  O  R  E  :
+        2  |                      |     L  E  V  E  L  :
         3  |                      |
-        4  |                      |  H  I  G  H  S  C  O  R  E  :
+        4  |                      |     H  I  G  H  S  C  O  R  E  :
         5  |                      |
         6  |                      |
         7  |                      |
         8  |                      |
         9  |                      |
         10 |                      |
-        11 |                      |  N  E  X  T  :
+        11 |                      |     N  E  X  T  :
         12 |                      |
-        13 |                      |  +  -  -  -  -  +
-        14 |                      |  |              |
-        15 |                      |  |              |
-        16 |                      |  |              |
-        17 |                      |  |              |
-        18 |                      |  +  -  -  -  -  +
+        13 |                      |     +  -  -  -  -  +
+        14 |                      |     |              |
+        15 |                      |     |              |
+        16 |                      |     |              |
+        17 |                      |     |              |
+        18 |                      |     +  -  -  -  -  +
         19 |                      |
         20 |                      |
         21 + - - - - - - - - - -  +
@@ -274,16 +274,16 @@ class Screen():
         top = corner + horizontal * 4 + corner
         bottom = top
         side = vertical + " " * 4 + vertical
-        self.addstr(13, 12, top)
+        self.addstr(13, 13, top)
         for i in range(14, 14 + 4):
-            self.addstr(i, 12, side)
-        self.addstr(14 + 4, 12, bottom)
+            self.addstr(i, 13, side)
+        self.addstr(14 + 4, 13, bottom)
 
         # Draws text to the screen
-        self.addstr(1, 12, "SCORE:")
-        self.addstr(2, 12, "LEVEL:")
-        self.addstr(4, 12, "HIGHSCORE:")
-        self.addstr(11, 12, "NEXT:")
+        self.addstr(1, 13, "SCORE:")
+        self.addstr(2, 13, "LEVEL:")
+        self.addstr(4, 13, "HIGHSCORE:")
+        self.addstr(11, 13, "NEXT:")
 
         # Finally refresh the screen
         self.refresh()
@@ -292,9 +292,8 @@ class Screen():
         """
         print a message in the appropriate place
         """
-        self.addstr(8, 12, " " * 20)
-        self.addstr(8, 12, str(self.print_count)+" "+" ".join(message))
-        self.print_count += 1
+        self.addstr(8, 13, " " * 20)
+        self.addstr(8, 13, " ".join(message))
         self.refresh()
 
     def grid(self):
