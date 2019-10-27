@@ -45,8 +45,6 @@ class Screen():
         # Initialize some attributes
         self.game = game
         self.screen = screen
-        # Deal with a screen that is too small
-        #self.resize()
         # Draw static information to the screen
         try:
             self.static()
@@ -61,7 +59,6 @@ class Screen():
                 curses.init_pair(i, -1, i)
             curses.curs_set(0)
             self.screen.nodelay(True)
-        # TODO BIG! test for screen size and if possible force screen size
 
     """
     Some wrappers to the screen
