@@ -1,5 +1,6 @@
 # PyTris
 Proof of concept tetris game in python using curses!
+Now rewritten in a much more maintainable style
 
 ![Screenshot](/screenshots/Screenshot_20191027_190011.png?raw=true "PyTris in action")
 
@@ -7,10 +8,16 @@ Proof of concept tetris game in python using curses!
 install by running `pip install --user git+https://github.com/mjtadema/pytris.git`
 
 # Features
-Moving of blocks, removing of full rows, dying when reaching the top
-Now it also has scoring, colors and music! :D
+Working tetris game!
 
-# Issues
-No multiplayer?
-Also some of the code needs some refactoring
-Should be aware of terminal size and resize the game accordingly
+# Controls
+movement : left, right, space
+drop down: return
+rotation : up, down
+pause    : p
+exit     : x
+
+# Roadmap
+Conform to tetris specifications
+Build a split screen multiplayer feature
+Add support for multiplayer over LAN
