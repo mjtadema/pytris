@@ -64,7 +64,7 @@ class Grid(list):
         for i in range(self.height):
             row = [self[j][i] for j in range(self.width)]
             if 0 not in row:
-                full = True
+                full += 1
                 for j in range(self.width):
                     # Pop the full row
                     self[j].pop(i)
