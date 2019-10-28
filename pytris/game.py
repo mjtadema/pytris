@@ -190,6 +190,7 @@ class Game():
                 # While paused, the block is not mobile so move commands are ignored
                 while self.paused:
                     self.screen.command()
+                    time.sleep(0.01)
                     continue # So that the block isn't immediately moved down
 
                 # After a tick passes, move the block down forcefully
