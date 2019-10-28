@@ -62,7 +62,7 @@ class Grid(list):
         # Grid is defined as x by y
         # Iterate over rows
         for i in range(self.height):
-            row = [ self[j][i] for j in range(self.width)]
+            row = [self[j][i] for j in range(self.width)]
             if 0 not in row:
                 full = True
                 for j in range(self.width):

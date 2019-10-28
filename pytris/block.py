@@ -51,13 +51,12 @@ class Block():
         """
 
         self.game = game
-        insert_point = (self.game.grid.width // 2, self.game.grid.top_buffer - 2)
+        insert_point = (self.game.grid.width // 2, self.game.grid.top_buffer)
         self.mobile = True
 
         # Initialize block definition
         self.anchor = [insert_point]
         self.rotation = [0]
-
 
 
     def __str__(self):
@@ -164,6 +163,10 @@ class Block():
         next = tuple(np.add(now, (0, 1)))
         self.anchor.append(next)
         self.rotation.append(self.rotation[-1])
+
+    def drop(self):
+        while self.mobile:
+            self.down()
 
     @move
     def left(self):

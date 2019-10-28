@@ -124,13 +124,14 @@ class Screen():
         """
         Attempt to get a command and execute it
         Available commands:
+        drop
         down
         left
         right
         clockwise
         counter clockwise
-        TODO pause
-        TODO exit
+        pause
+        exit
         :return: a function to execute
         """
         if not self.screen:
@@ -143,7 +144,8 @@ class Screen():
             "KEY_DOWN": self.game.block.countercw,
             "x": exit,
             "p": self.game.pause,
-            "KEY_RESIZE": self.resize
+            "KEY_RESIZE": self.resize,
+            "\n": self.game.block.drop
         }
         try:
             return commands[self.getkey()]()
@@ -287,10 +289,11 @@ class Screen():
 
         # Print controls
         controls = """CONTROLS:
-movement: left, right, space
-rotation: up, down
-pause   : p
-exit    : x"""
+movement : left, right, space
+drop down: return
+rotation : up, down
+pause    : p
+exit     : x"""
         for i, line in enumerate(controls.split("\n")):
             i += 15 # start
             self.addstr(i, 25, line)

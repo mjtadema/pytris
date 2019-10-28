@@ -148,6 +148,7 @@ class Game():
 
             # Pop a new block from queue
             self.block = self.queue.pop()
+            self.screen.block()
 
             while self.block.mobile:
                 # Try to get commands turing a tick
