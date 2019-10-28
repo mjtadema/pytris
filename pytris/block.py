@@ -28,7 +28,7 @@ class Block():
     Base block class, is inherited from to form individual blocks
     Collisions are checked upon movement
     """
-    def __init__(self, game, *args, **kwargs):
+    def __init__(self, game, *args, color = 0, states = [], name = "", **kwargs):
         """
         Base block object
             init()                  : Spawns new block
@@ -49,6 +49,9 @@ class Block():
             rotation                : Current relative rotation to anchor
 
         """
+        self.color = color
+        self.states = states
+        self.name = name
 
         self.game = game
         insert_point = (self.game.grid.width // 2, self.game.grid.top_buffer)
@@ -201,20 +204,20 @@ class Block():
         self.rotation.append(tmp)
         self.anchor.append(self.anchor[-1])
 
-"""
-0: black
-1: red
-2: green
-3: yellow
-4: blue
-5: magenta
-6: cyan
-7: white
-"""
+    """
+    0: black
+    1: red
+    2: green
+    3: yellow
+    4: blue
+    5: magenta
+    6: cyan
+    7: white
+    """
 
-class I(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def I(cls, *args, **kwargs):
+        states = [
             [
                                 (0, 2),
                                 (0, 1),
@@ -225,21 +228,21 @@ class I(Block):
                         (-1,0),(0,0),(1,0),(2,0)
             ],
             [
-                                (0,1),
-                                (0,0),
-                                (0,-1),
-                                (0,-2)
+                                (0, 2),
+                                (0, 1),
+                                (0, 0),
+                                (0,-1)
             ],
             [
                 (-2,0),(-1,0),(0,0),(1,0)
             ]
         ]
-        self.color = 1
-        super().__init__(*args, **kwargs)
+        color = 1
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-class T(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def T(cls, *args, **kwargs):
+        states = [
             [
                          (0, 1),
                 (-1, 0), (0, 0), (1, 0),
@@ -260,23 +263,23 @@ class T(Block):
                          (0,-1)
             ]
         ]
-        self.color = 2
-        super().__init__(*args, **kwargs)
+        color = 2
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-class O(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def O(cls, *args, **kwargs):
+        states = [
             [
                 (-1, 0), (0, 0),
                 (-1,-1), (0,-1)
             ]
         ]
-        self.color = 3
-        super().__init__(*args, **kwargs)
+        color = 3
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-class L(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def L(cls, *args, **kwargs):
+        states = [
             [
                 (0, 1),
                 (0, 0),
@@ -296,12 +299,12 @@ class L(Block):
                 (-1, 0), (0, 0), (1, 0),
             ]
         ]
-        self.color = 4
-        super().__init__(*args, **kwargs)
+        color = 4
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-class J(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def J(cls, *args, **kwargs):
+        states = [
             [
                          (0, 1),
                          (0, 0),
@@ -321,12 +324,12 @@ class J(Block):
                                  (1,-1)
             ]
         ]
-        self.color = 5
-        super().__init__(*args, **kwargs)
+        color = 5
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-class S(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def S(cls, *args, **kwargs):
+        states = [
             [
                         (0, 1), (1, 1),
                 (-1,0), (0, 0)
@@ -337,12 +340,12 @@ class S(Block):
                         (1,-1)
             ]
         ]
-        self.color = 6
-        super().__init__(*args, **kwargs)
+        color = 6
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-class Z(Block):
-    def __init__(self, *args, **kwargs):
-        self.states = [
+    @classmethod
+    def Z(cls, *args, **kwargs):
+        states = [
             [
                 (-1,1), (0, 1),
                         (0, 0), (1, 0)
@@ -353,7 +356,15 @@ class Z(Block):
                 (0,-1)
             ]
         ]
-        self.color = 7
-        super().__init__(*args, **kwargs)
+        color = 7
+        return cls(*args, color=color, states=states, name=__name__, **kwargs)
 
-blocks = [I,T,O,L,J,S,Z]
+blocks = [
+    Block.I,
+    Block.T,
+    Block.O,
+    Block.L,
+    Block.J,
+    Block.S,
+    Block.Z
+]

@@ -1,4 +1,3 @@
-import sys
 import curses
 
 class Screen():
@@ -92,7 +91,7 @@ class Screen():
             y + y0,
             x + x0,
             " ",
-            color
+            self.color(color)
         )
 
     def resize(self):
@@ -204,6 +203,20 @@ class Screen():
             self.pixel(x, y, next.color, y0 = 14, x0 = 13)
         # Finally refresh the screen
         self.refresh()
+
+    def color(self, color):
+        """
+        Return a color offset by the current level
+        :return: int
+        """
+        if color == 0:
+            return 0
+        tmp = color
+        tmp += self.game.level
+        tmp = tmp % 7
+        if tmp == 0:
+            tmp += 1
+        return tmp
 
     def data(self):
         """
