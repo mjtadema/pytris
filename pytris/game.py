@@ -76,18 +76,6 @@ class Game():
         # Move arguments to attributes
         self.debug = debug
 
-        # Initialize screen
-        self.screen = Screen(self, screen)
-
-        # Initialize grid
-        self.grid = Grid(self)
-
-        # Initialize block queue
-        self.queue = Queue(self)
-
-        # Pop the first block
-        self.block = self.queue.pop()
-
         # Initialize some values
         self.gameover = False
         self.score = 0
@@ -101,6 +89,18 @@ class Game():
         self.level = 1
         self.t = 0
         self.paused = False
+
+        # Initialize screen
+        self.screen = Screen(self, screen)
+
+        # Initialize grid
+        self.grid = Grid(self)
+
+        # Initialize block queue
+        self.queue = Queue(self)
+
+        # Pop the first block
+        self.block = self.queue.pop()
 
         self.read_highscore()
         self.screen.data()
@@ -147,8 +147,10 @@ class Game():
         if self.score // self.level >= 20:
             self.level += 1
             self.speed *= self.factor
-            self.screen.print("Speed is now: " + str(self.speed))
-            self.screen.data()
+            # Also redraw all pixels because they now change color
+            self.screen.grid()
+            self.screen.block()
+            self.screen.next()
         # Refresh the data on screen
         self.screen.data()
 
