@@ -1,1 +1,1 @@
-from .__main__ import wrap as main
+from .game import wrap as main

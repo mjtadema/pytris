@@ -26,9 +26,35 @@ from .screen import Screen
 from .queue import Queue
 
 # Stdlib
+import argparse
+import curses
 import time
 from pathlib import Path
 import getpass
+
+def main(screen = None, keytest = False):
+    try:
+        game = Game(screen = screen)
+        if keytest:
+            game.screen.keytest()
+        else:
+            game.start()
+    except KeyboardInterrupt:
+        exit()
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--audio', '-a', action='store_true', default=False)
+    parser.add_argument('--debug', '-d', action='store_true', default=True)
+    parser.add_argument('--keytest', '-t', action='store_true', default=False)
+    return parser.parse_args()
+
+def wrap():
+    args = parse_args()
+    kwargs = {}
+    if args.keytest:
+        kwargs['keytest'] = True
+    curses.wrapper(main, **kwargs)
 
 class Game():
     """
@@ -69,9 +95,9 @@ class Game():
             # When debugging just put maximum speed
             self.speed = 0.0
         else:
-            self.speed = 0.8
+            self.speed = 0.7
 
-        self.factor = 0.6
+        self.factor = 0.7
         self.level = 1
         self.t = 0
         self.paused = False
