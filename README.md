@@ -11,11 +11,11 @@ install by running `pip install --user git+https://github.com/mjtadema/pytris.gi
 Working tetris game!
 
 # Controls
-movement : left, right, space
-drop down: return
-rotation : up, down
-pause    : p
-exit     : x
+* movement  : left, right, space
+* drop down : return
+* rotation  : up, down
+* pause     : p
+* exit      : x
 
 # Roadmap
 Conform to tetris specifications
